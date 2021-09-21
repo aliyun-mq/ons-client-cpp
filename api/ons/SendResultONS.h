@@ -10,6 +10,7 @@ namespace ons {
 class SendCallbackONSWrapper;
 class ONSSendCallback;
 class ProducerImpl;
+class OrderProducerImpl;
 
 class ONSCLIENT_API SendResultONS {
 public:
@@ -17,7 +18,7 @@ public:
 
   virtual ~SendResultONS();
 
-  const std::string& getMessageId() const;
+  const std::string &getMessageId() const;
 
 protected:
   void setMessageId(absl::string_view message_id);
@@ -28,6 +29,7 @@ private:
   friend class SendCallbackONSWrapper;
   friend class ONSSendCallback;
   friend class ProducerImpl;
+  friend class OrderProducerImpl;
 };
 
 } // namespace ons
