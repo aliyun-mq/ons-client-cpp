@@ -15,9 +15,7 @@ void OrderProducerImpl::shutdown() { producer_.shutdown(); }
 
 SendResultONS OrderProducerImpl::send(Message& msg, std::string message_group) {
   ROCKETMQ_NAMESPACE::MQMessage message = ons::ONSUtil::get().msgConvert(msg);
-
   ROCKETMQ_NAMESPACE::SendResult send_result = producer_.send(message, &selector_, &message_group);
-
   SendResultONS ons_send_result = SendResultONS();
   ons_send_result.setMessageId(send_result.getMsgId());
   return ons_send_result;
