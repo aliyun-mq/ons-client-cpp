@@ -1,0 +1,23 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
+cc_test(
+    name = "access_point_test",
+    srcs = [
+        "AccessPointTest.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "ons_environment_variable_factory_property_test",
+    srcs = [
+        "ONSEnvironmentVariableFactoryPropertyTest.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

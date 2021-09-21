@@ -1,0 +1,41 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "example_ons_producer",
+    srcs = [
+        "ExampleONSProducer.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)
+
+cc_binary(
+    name = "example_ons_oneway_producer",
+    srcs = [
+        "ExampleONSOnewayProducer.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)
+
+cc_binary(
+    name = "example_ons_async_producer",
+    srcs = [
+        "ExampleONSAsyncProducer.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)
+
+cc_binary(
+    name = "example_ons_push_consumer",
+    srcs = [
+        "ExampleONSPushConsumer.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)
