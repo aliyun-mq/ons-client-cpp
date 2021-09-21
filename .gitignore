@@ -1,7 +1,7 @@
 .DS_Store
 bazel-bin
 bazel-out
-bazel-ons-cpp
+bazel-ons-client-cpp
 bazel-testlogs
 compile_commands.json
 .vscode
