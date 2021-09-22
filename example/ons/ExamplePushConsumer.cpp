@@ -25,23 +25,15 @@ int main(int argc, char* argv[]) {
   logger.init();
 
   std::cout << "=======Before consuming messages=======" << std::endl;
-  ONSFactoryProperty factoryInfo;
+  ONSFactoryProperty factory_property;
 
-  /*
-    factoryInfo.setFactoryProperty(ONSFactoryProperty::GroupId, "Your-GroupId");
-    factoryInfo.setFactoryProperty(ONSFactoryProperty::AccessKey, "Your-Access-Key");
-    factoryInfo.setFactoryProperty(ONSFactoryProperty::SecretKey, "Your-Secret-Key");
-    factoryInfo.setFactoryProperty(ONSFactoryProperty::NAMESRV_ADDR, "Your-Access-Point-URL");
-  */
-
-  PushConsumer* consumer = ONSFactory::getInstance()->createPushConsumer(factoryInfo);
-
+  PushConsumer* consumer = ONSFactory::getInstance()->createPushConsumer(factory_property);
   std::string topic("cpp_sdk_standard");
   std::string tag("*");
 
   // register your own listener here to handle the messages received.
   auto* messageListener = new ExampleMessageListener();
-  consumer->subscribe(topic.c_str(), tag.c_str(), messageListener);
+  consumer->subscribe(topic, tag, messageListener);
 
   // Start this consumer
   consumer->start();
