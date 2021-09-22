@@ -49,3 +49,13 @@ cc_binary(
         "//src/main/cpp/ons:ons_library",
     ]
 )
+
+cc_binary(
+    name = "example_ons_transaction_producer",
+    srcs = [
+        "ExampleONSTransactionProducer.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)

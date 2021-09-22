@@ -5,9 +5,11 @@
 namespace ons {
 class LocalTransactionExecutor {
 public:
-  LocalTransactionExecutor() {}
-  virtual TransactionStatus execute(Message& msg) = 0;
-  virtual ~LocalTransactionExecutor() {}
+  LocalTransactionExecutor() = default;
+
+  virtual ~LocalTransactionExecutor() = default;
+
+  virtual TransactionStatus execute(const Message &msg) = 0;
 };
 
 // Keep API compatible

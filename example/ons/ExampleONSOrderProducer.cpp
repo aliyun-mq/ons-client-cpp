@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 
 #include "ons/ONSFactory.h"
@@ -16,4 +17,6 @@ int main(int argc, char* argv[]) {
   std::cout << send_result.getMessageId() << std::endl;
 
   order_producer->shutdown();
+
+  return EXIT_SUCCESS;
 }

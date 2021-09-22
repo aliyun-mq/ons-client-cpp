@@ -11,6 +11,7 @@ class SendCallbackONSWrapper;
 class ONSSendCallback;
 class ProducerImpl;
 class OrderProducerImpl;
+class TransactionProducerImpl;
 
 class ONSCLIENT_API SendResultONS {
 public:
@@ -30,6 +31,7 @@ private:
   friend class ONSSendCallback;
   friend class ProducerImpl;
   friend class OrderProducerImpl;
+  friend class TransactionProducerImpl;
 };
 
 } // namespace ons

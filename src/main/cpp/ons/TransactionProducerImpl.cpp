@@ -1,12 +1,17 @@
 #include "TransactionProducerImpl.h"
 
+#include <cassert>
+
 #include "absl/strings/ascii.h"
 
+#include "ONSUtil.h"
 #include "ons/SendResultONS.h"
+#include "ons/TransactionStatus.h"
+
+#include "spdlog/spdlog.h"
 
 namespace ons {
 
-// TODO: not yet implemented
 TransactionProducerImpl::TransactionProducerImpl(const ONSFactoryProperty& factory_property,
                                                  LocalTransactionChecker* checker)
     : ONSClientAbstract(factory_property), producer_(factory_property.getGroupId()) {
@@ -46,8 +51,23 @@ void TransactionProducerImpl::start() { producer_.start(); }
 void TransactionProducerImpl::shutdown() { producer_.shutdown(); }
 
 SendResultONS TransactionProducerImpl::send(Message& msg, LocalTransactionExecuter* executor) {
-
-  return SendResultONS();
+  assert(executor);
+  ROCKETMQ_NAMESPACE::MQMessage message = ONSUtil::get().msgConvert(msg);
+  auto transaction = producer_.prepare(message);
+  TransactionStatus status = executor->execute(msg);
+  switch (status) {
+  case TransactionStatus::CommitTransaction:
+    transaction->commit();
+    break;
+  case TransactionStatus::RollbackTransaction:
+    transaction->rollback();
+    break;
+  case TransactionStatus::Unknow:
+    break;
+  }
+  auto send_result = SendResultONS();
+  send_result.setMessageId(transaction->messageId());
+  return send_result;
 }
 
 } // namespace ons
