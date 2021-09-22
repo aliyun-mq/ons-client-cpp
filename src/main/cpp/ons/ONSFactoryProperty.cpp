@@ -246,9 +246,22 @@ void ONSFactoryProperty::setFactoryProperties(const std::map<std::string, std::s
 
 std::map<std::string, std::string> ONSFactoryProperty::getFactoryProperties() const { return property_map_; }
 
-std::string ONSFactoryProperty::getProducerId() const { return getProperty(ProducerId, EMPTY_STRING); }
+std::string ONSFactoryProperty::getProducerId() const {
+  absl::optional<std::string> group_id = getProperty(GroupId);
+  if (group_id.has_value()) {
+    return group_id.value();
+  }
 
-std::string ONSFactoryProperty::getConsumerId() const { return getProperty(ConsumerId, EMPTY_STRING); }
+  return getProperty(ProducerId, EMPTY_STRING);
+}
+
+std::string ONSFactoryProperty::getConsumerId() const {
+  absl::optional<std::string> group_id = getProperty(GroupId);
+  if (group_id.has_value()) {
+    return group_id.value();
+  }
+  return getProperty(ConsumerId, EMPTY_STRING);
+}
 
 std::string ONSFactoryProperty::getGroupId() const { return getProperty(GroupId, EMPTY_STRING); }
 
