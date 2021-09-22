@@ -19,7 +19,7 @@ public:
 
   void shutdown() override;
 
-  SendResultONS send(Message& msg, std::string sharding_key) override;
+  SendResultONS send(Message& msg, std::string message_group) override;
 
 private:
   ROCKETMQ_NAMESPACE::DefaultMQProducer producer_;

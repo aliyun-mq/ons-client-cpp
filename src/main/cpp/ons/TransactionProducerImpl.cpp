@@ -5,15 +5,13 @@ namespace ons {
 
 // TODO: not yet implemented
 TransactionProducerImpl::TransactionProducerImpl(const ONSFactoryProperty& ons_factory_property,
-                                                 LocalTransactionChecker* checker) {}
+                                                 LocalTransactionChecker* checker)
+    : ONSClientAbstract(ons_factory_property), producer_(ons_factory_property.getGroupId()) {}
 
-// TODO: not yet implemented
-void TransactionProducerImpl::start() {}
+void TransactionProducerImpl::start() { producer_.start(); }
 
-// TODO: not yet implemented
-void TransactionProducerImpl::shutdown() {}
+void TransactionProducerImpl::shutdown() { producer_.shutdown(); }
 
-// TODO: not yet implemented
 SendResultONS TransactionProducerImpl::send(Message& msg, LocalTransactionExecuter* executor) {
   return SendResultONS();
 }

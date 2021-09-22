@@ -18,7 +18,7 @@ public:
   // by ons internally.
   virtual void shutdown() = 0;
 
-  virtual SendResultONS send(Message& msg, std::string shardingKey) = 0;
+  virtual SendResultONS send(Message &msg, std::string message_group) = 0;
 };
 
 } // namespace ons
