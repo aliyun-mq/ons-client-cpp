@@ -20,9 +20,9 @@ AccessPoint::operator bool() const {
   return absl::StrContains(access_point_, '.');
 }
 
-absl::string_view AccessPoint::resourceNamespace() const {
+std::string AccessPoint::resourceNamespace() const {
   std::vector<absl::string_view> segments = absl::StrSplit(absl::StripPrefix(access_point_, SCHEMA), '.');
-  return segments[0];
+  return std::string(segments[0].data(), segments[0].length());
 }
 
 std::string AccessPoint::nameServerAddress() const {

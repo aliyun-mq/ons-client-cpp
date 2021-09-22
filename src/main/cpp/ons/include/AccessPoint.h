@@ -11,7 +11,7 @@ public:
 
   operator bool() const;
 
-  absl::string_view resourceNamespace() const;
+  std::string resourceNamespace() const;
 
   std::string nameServerAddress() const;
 
