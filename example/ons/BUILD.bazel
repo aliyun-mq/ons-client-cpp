@@ -1,9 +1,9 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 cc_binary(
-    name = "example_ons_producer",
+    name = "example_producer",
     srcs = [
-        "ExampleONSProducer.cpp",
+        "ExampleProducer.cpp",
     ],
     deps = [
         "//src/main/cpp/ons:ons_library",
@@ -11,9 +11,9 @@ cc_binary(
 )
 
 cc_binary(
-    name = "example_ons_oneway_producer",
+    name = "example_oneway_producer",
     srcs = [
-        "ExampleONSOnewayProducer.cpp",
+        "ExampleOnewayProducer.cpp",
     ],
     deps = [
         "//src/main/cpp/ons:ons_library",
@@ -21,9 +21,9 @@ cc_binary(
 )
 
 cc_binary(
-    name = "example_ons_async_producer",
+    name = "example_async_producer",
     srcs = [
-        "ExampleONSAsyncProducer.cpp",
+        "ExampleAsyncProducer.cpp",
     ],
     deps = [
         "//src/main/cpp/ons:ons_library",
@@ -31,9 +31,9 @@ cc_binary(
 )
 
 cc_binary(
-    name = "example_ons_push_consumer",
+    name = "example_push_consumer",
     srcs = [
-        "ExampleONSPushConsumer.cpp",
+        "ExamplePushConsumer.cpp",
     ],
     deps = [
         "//src/main/cpp/ons:ons_library",
@@ -41,9 +41,9 @@ cc_binary(
 )
 
 cc_binary(
-    name = "example_ons_order_producer",
+    name = "example_order_producer",
     srcs = [
-        "ExampleONSOrderProducer.cpp",
+        "ExampleOrderProducer.cpp",
     ],
     deps = [
         "//src/main/cpp/ons:ons_library",
@@ -51,9 +51,9 @@ cc_binary(
 )
 
 cc_binary(
-    name = "example_ons_transaction_producer",
+    name = "example_transaction_producer",
     srcs = [
-        "ExampleONSTransactionProducer.cpp",
+        "ExampleTransactionProducer.cpp",
     ],
     deps = [
         "//src/main/cpp/ons:ons_library",
