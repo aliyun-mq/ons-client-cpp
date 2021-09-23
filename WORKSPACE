@@ -4,6 +4,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "org_apache_rocketmq",
+    sha256 = "5ed7b30186c9088c484ecd16b935988ac9daf0e6280fd4319373ba447ef9f694",
     urls = [
         "https://github.com/lizhanhui/rocketmq-client-cpp/archive/refs/tags/v1.0-alpha5.tar.gz",
     ],
