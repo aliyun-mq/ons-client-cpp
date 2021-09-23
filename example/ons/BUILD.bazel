@@ -59,3 +59,13 @@ cc_binary(
         "//src/main/cpp/ons:ons_library",
     ],
 )
+
+cc_binary(
+    name = "example_timed_message",
+    srcs = [
+        "ExampleTimedMessage.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)

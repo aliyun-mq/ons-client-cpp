@@ -83,9 +83,13 @@ Message ONSUtil::msgConvert(ROCKETMQ_NAMESPACE::MQMessageExt& rocketmq_message_e
   message.setMsgID(rocketmq_message_ext.getMsgId().c_str());
 
   message.setReconsumeTimes(rocketmq_message_ext.getDeliveryAttempt());
+
   auto store_time =
       std::chrono::system_clock::time_point() + std::chrono::milliseconds(rocketmq_message_ext.getStoreTimestamp());
   message.setStoreTimestamp(store_time);
+
+  message.setBornTimestamp(rocketmq_message_ext.bornTimestamp());
+
   message.setQueueOffset(rocketmq_message_ext.getQueueOffset());
 
   std::map<std::string, std::string> properties = rocketmq_message_ext.getProperties();

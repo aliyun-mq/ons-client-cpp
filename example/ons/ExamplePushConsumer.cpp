@@ -1,6 +1,7 @@
 #include "ons/ONSFactory.h"
 #include "rocketmq/Logger.h"
 
+#include <chrono>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -14,7 +15,12 @@ class ExampleMessageListener : public MessageListener {
 public:
   Action consume(Message& message, ConsumeContext& context) override {
     std::lock_guard<std::mutex> lk(console_mtx);
-    std::cout << "Received a message. Topic: " << message.getTopic() << ", MsgId: " << message.getMsgID() << std::endl;
+    auto latency = std::chrono::system_clock::now() - message.getStoreTimestamp();
+    auto latency2 = std::chrono::system_clock::now() - message.getBornTimestamp();
+    std::cout << "Received a message. Topic: " << message.getTopic() << ", MsgId: " << message.getMsgID()
+              << ", Current - Store-Time: " << std::chrono::duration_cast<std::chrono::seconds>(latency).count()
+              << "s, Current - Born-Time: " << std::chrono::duration_cast<std::chrono::seconds>(latency2).count() << "s"
+              << std::endl;
     return Action::CommitMessage;
   }
 };
@@ -42,7 +48,7 @@ int main(int argc, char* argv[]) {
   consumer->start();
 
   // Keep main thread running until process finished.
-  std::this_thread::sleep_for(std::chrono::milliseconds(60 * 1000));
+  std::this_thread::sleep_for(std::chrono::seconds(600));
   consumer->shutdown();
   std::cout << "=======After consuming messages======" << std::endl;
   return 0;

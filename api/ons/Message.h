@@ -42,7 +42,8 @@ public:
 
   virtual ~Message() = default;
 
-  // Developers may attach application specific key-value pairs to message, which will be accessible at consuming stage.
+  // Developers may attach application specific key-value pairs to message,
+  // which will be accessible at consuming stage.
   void putUserProperty(absl::string_view key, absl::string_view value);
 
   // Used to acquire the key-value pair as was put before the message is sent.
@@ -87,6 +88,8 @@ public:
 
   std::chrono::system_clock::time_point getStoreTimestamp() const;
 
+  std::chrono::system_clock::time_point getBornTimestamp() const { return born_timestamp_; }
+
   std::string toString() const;
 
   std::string toSystemString() const;
@@ -98,6 +101,8 @@ public:
 protected:
   void setStoreTimestamp(std::chrono::system_clock::time_point store_timestamp);
 
+  void setBornTimestamp(std::chrono::system_clock::time_point born_timestamp) { born_timestamp_ = born_timestamp; }
+
   void setQueueOffset(std::int64_t offset);
 
   void setReconsumeTimes(std::int32_t reconsume_times);
@@ -108,6 +113,7 @@ private:
   std::string topic_;
   std::string body_;
   std::chrono::system_clock::time_point store_timestamp_{std::chrono::system_clock::now()};
+  std::chrono::system_clock::time_point born_timestamp_{std::chrono::system_clock::now()};
   std::int64_t queue_offset_{0};
   std::map<std::string, std::string> system_properties_;
   std::map<std::string, std::string> user_properties_;
