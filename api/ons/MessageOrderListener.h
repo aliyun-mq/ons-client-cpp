@@ -8,8 +8,7 @@ namespace ons {
 
 class MessageOrderListener {
 public:
-  MessageOrderListener() {}
-  virtual ~MessageOrderListener() {}
+  virtual ~MessageOrderListener() = default;
 
   // interface of consuming message, should be realized by application
   virtual OrderAction consume(Message& message, ConsumeOrderContext& context) = 0;

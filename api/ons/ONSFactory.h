@@ -9,6 +9,7 @@ public:
   ONSFactory() = delete;
 
   virtual ~ONSFactory() = default;
+
   static ONSFactoryAPI* getInstance();
 };
 

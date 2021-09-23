@@ -7,8 +7,7 @@
 namespace ons {
 class ONSCLIENT_API TransactionProducer {
 public:
-  TransactionProducer() {}
-  virtual ~TransactionProducer() {}
+  virtual ~TransactionProducer() = default;
 
   // before send msg, start must be called to allocate resources.
   virtual void start() = 0;
@@ -19,6 +18,6 @@ public:
 
   // retry max 3 times if send failed. if no exception thrown, it sends
   // success;
-  virtual SendResultONS send(Message& msg, LocalTransactionExecuter* executor) = 0;
+  virtual SendResultONS send(Message& msg, LocalTransactionExecuter* executor) noexcept(false) = 0;
 };
 } // namespace ons

@@ -1,6 +1,7 @@
 #include "ProducerImpl.h"
 
 #include <chrono>
+#include <cstdlib>
 #include <memory>
 
 #include "ONSUtil.h"
@@ -70,11 +71,13 @@ SendResultONS ProducerImpl::send(Message& message, const MessageQueueONS& messag
   return send_result_ons;
 }
 
-void ProducerImpl::sendAsync(Message& message, SendCallbackONS* callback) {
+void ProducerImpl::sendAsync(Message& message, SendCallbackONS* callback) noexcept {
   ROCKETMQ_NAMESPACE::MQMessage mq_message = ONSUtil::get().msgConvert(message);
-  if (nullptr == callback) {
-    THROW_ONS_EXCEPTION(ONSClientException, "SendCallbackONS is not implemented.", SEND_CALLBACK_IS_EMPTY);
+
+  if (!callback) {
+    abort();
   }
+
   std::shared_ptr<SendCallbackONSWrapper> send_callback_ons_wrapper_shared_ptr = nullptr;
   {
     absl::MutexLock lock(&callbacks_mtx_);
@@ -87,7 +90,7 @@ void ProducerImpl::sendAsync(Message& message, SendCallbackONS* callback) {
   producer_.send(mq_message, send_callback_ons_wrapper_shared_ptr.get(), true);
 }
 
-void ProducerImpl::sendOneway(Message& message) {
+void ProducerImpl::sendOneway(Message& message) noexcept {
   ROCKETMQ_NAMESPACE::MQMessage mq_message = ONSUtil::get().msgConvert(message);
   producer_.sendOneway(mq_message);
 }

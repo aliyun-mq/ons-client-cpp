@@ -17,8 +17,6 @@ class ONSFactoryProperty;
 
 class ONSCLIENT_API PullConsumer {
 public:
-  PullConsumer() = default;
-
   virtual ~PullConsumer() = default;
 
   virtual void start() = 0;
@@ -42,7 +40,7 @@ public:
 
   virtual std::int64_t fetchConsumeOffset(const MessageQueueONS& mq, bool skip_cache) = 0;
 
-  virtual void persistConsumerOffset4PullConsumer(const MessageQueueONS& mq) throw(ons::ONSClientException) = 0;
+  virtual void persistConsumerOffset4PullConsumer(const MessageQueueONS& mq) noexcept(false) = 0;
 };
 
 } // namespace ons

@@ -17,7 +17,6 @@ namespace ons {
 
 class ONSCLIENT_API ONSFactoryAPI {
 public:
-  ONSFactoryAPI() = default;
   virtual ~ONSFactoryAPI() = default;
 
   virtual Producer* createProducer(ONSFactoryProperty& factory_properties) = 0;

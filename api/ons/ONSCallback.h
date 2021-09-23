@@ -7,7 +7,9 @@ namespace ons {
 class SendCallbackONS {
 public:
   virtual ~SendCallbackONS() = default;
-  virtual void onSuccess(SendResultONS& sendResult) = 0;
+
+  virtual void onSuccess(SendResultONS& send_result) = 0;
+
   virtual void onException(ONSClientException& e) = 0;
 };
 

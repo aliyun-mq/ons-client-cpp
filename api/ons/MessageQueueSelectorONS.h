@@ -7,7 +7,8 @@ namespace ons {
 
 class MessageQueueSelectorONS {
 public:
-  virtual ~MessageQueueSelectorONS() {}
+  virtual ~MessageQueueSelectorONS() = default;
+  
   virtual MessageQueueONS select(const std::vector<MessageQueueONS>& mqs, const Message& msg, void* arg) = 0;
 };
 

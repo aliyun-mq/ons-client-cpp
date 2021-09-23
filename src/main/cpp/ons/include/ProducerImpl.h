@@ -19,13 +19,13 @@ public:
 
   void shutdown() override;
 
-  SendResultONS send(Message& message) override;
+  SendResultONS send(Message& message) noexcept(false) override;
 
-  SendResultONS send(Message& message, const MessageQueueONS& message_queue) override;
+  SendResultONS send(Message& message, const MessageQueueONS& message_queue) noexcept(false) override;
 
-  void sendAsync(Message& message, SendCallbackONS* callback) override;
+  void sendAsync(Message& message, SendCallbackONS* callback) noexcept override;
 
-  void sendOneway(Message& message) override;
+  void sendOneway(Message& message) noexcept override;
 
 private:
   static ROCKETMQ_NAMESPACE::MQMessageQueue messageQueueConvert(const MessageQueueONS& message_queue_ons);

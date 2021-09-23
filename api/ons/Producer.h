@@ -10,8 +10,6 @@ namespace ons {
 
 class ONSCLIENT_API Producer {
 public:
-  Producer() = default;
-
   virtual ~Producer() = default;
 
   // before sending msg, start function must be called to prepare and allocate necessary resources.
@@ -21,15 +19,20 @@ public:
   virtual void shutdown() = 0;
 
   // retry at most 3 times internally. Sending can be regarded as success if no exception is raised.
-  virtual ons::SendResultONS send(Message& message) = 0;
+  virtual ons::SendResultONS send(Message& message) noexcept(false) = 0;
 
-  virtual ons::SendResultONS send(Message& message, const MessageQueueONS& mq) = 0;
+  virtual ons::SendResultONS send(Message& message, const MessageQueueONS& mq) noexcept(false) = 0;
 
-  // async send
-  virtual void sendAsync(Message& msg, ons::SendCallbackONS* callback) = 0;
+  /**
+   * @brief Send message asynchronously.
+   *
+   * @param msg
+   * @param callback
+   */
+  virtual void sendAsync(Message& message, ons::SendCallbackONS* callback) noexcept = 0;
 
   // one-way send
-  virtual void sendOneway(Message& msg) = 0;
+  virtual void sendOneway(Message& message) noexcept = 0;
 };
 
 } // namespace ons
