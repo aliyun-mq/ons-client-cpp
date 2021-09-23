@@ -18,13 +18,9 @@ public:
 
   void shutdown() override;
 
-  void subscribe(absl::string_view topic, absl::string_view sub_expression, MessageListener* listener) override;
+  void subscribe(absl::string_view topic, absl::string_view sub_expression) override;
 
-private:
-  absl::flat_hash_map<std::string, std::shared_ptr<MessageListenerWrapper>>
-      subscribe_table_ GUARDED_BY(subscribe_table_mtx_);
-
-  absl::Mutex subscribe_table_mtx_; // protects subscribe_table_
+  void registerMessageListener(MessageListener* listener) override;
 };
 
 } // namespace ons

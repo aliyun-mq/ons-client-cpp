@@ -1,4 +1,7 @@
 #include "ConsumerImpl.h"
+
+#include "absl/memory/memory.h"
+
 #include "MessageListenerWrapper.h"
 
 namespace ons {
@@ -10,26 +13,25 @@ void ConsumerImpl::start() { ONSConsumerAbstract::start(); }
 
 void ConsumerImpl::shutdown() { ONSConsumerAbstract::shutdown(); }
 
-void ConsumerImpl::subscribe(absl::string_view topic, absl::string_view sub_expression, MessageListener* listener) {
-  if (nullptr == topic) {
+void ConsumerImpl::subscribe(absl::string_view topic, absl::string_view sub_expression) {
+  if (topic.empty()) {
     THROW_ONS_EXCEPTION(ONSClientException, "Subscribed topic is null", OTHER_ERROR);
   }
-  if (nullptr == sub_expression) {
+
+  if (sub_expression.empty()) {
     THROW_ONS_EXCEPTION(ONSClientException, "SubExpression topic is null", OTHER_ERROR);
-  }
-  if (nullptr == listener) {
-    THROW_ONS_EXCEPTION(ONSClientException, "MessageListener is not implemented.", SEND_CALLBACK_IS_EMPTY);
   }
 
   ONSConsumerAbstract::subscribe(topic, sub_expression);
+}
 
-  std::shared_ptr<MessageListenerWrapper> message_listener_wrapper_shared_ptr;
-  {
-    absl::MutexLock lock(&subscribe_table_mtx_);
-    message_listener_wrapper_shared_ptr = std::make_shared<MessageListenerWrapper>(listener);
-    subscribe_table_[std::string(topic)] = message_listener_wrapper_shared_ptr;
+void ConsumerImpl::registerMessageListener(MessageListener* listener) {
+  if (nullptr == listener) {
+    THROW_ONS_EXCEPTION(ONSClientException, "MessageListener may not be nullptr.", CONSUME_MESSAGE_LISTENER_IS_NULL);
   }
-  ONSConsumerAbstract::registerMessageListener(message_listener_wrapper_shared_ptr.get());
+
+  auto message_listener = absl::make_unique<MessageListenerWrapper>(listener);
+  ONSConsumerAbstract::registerMessageListener(std::move(message_listener));
 }
 
 } // namespace ons

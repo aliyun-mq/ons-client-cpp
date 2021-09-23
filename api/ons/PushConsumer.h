@@ -16,7 +16,10 @@ public:
 
   virtual void shutdown() = 0;
 
-  virtual void subscribe(absl::string_view topic, absl::string_view filter_expression, MessageListener* listener) = 0;
+  virtual void subscribe(absl::string_view topic,
+                         absl::string_view filter_expression) = 0;
+
+  virtual void registerMessageListener(MessageListener *listener) = 0;
 };
 
 } // namespace ons

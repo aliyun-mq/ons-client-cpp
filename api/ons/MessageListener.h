@@ -9,6 +9,7 @@ namespace ons {
 class ONSCLIENT_API MessageListener {
 public:
   MessageListener() = default;
+
   virtual ~MessageListener() = default;
 
   // interface of consuming message, should be realized by application

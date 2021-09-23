@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "ONSClientAbstract.h"
 #include "rocketmq/DefaultMQPushConsumer.h"
 #include "rocketmq/MessageListener.h"
@@ -18,9 +20,11 @@ public:
 protected:
   void subscribe(absl::string_view topic, absl::string_view sub_expression);
 
-  void registerMessageListener(ROCKETMQ_NAMESPACE::MessageListener* message_listener);
+  void registerMessageListener(std::unique_ptr<ROCKETMQ_NAMESPACE::MessageListener> message_listener);
 
   ROCKETMQ_NAMESPACE::DefaultMQPushConsumer consumer_;
+
+  std::unique_ptr<ROCKETMQ_NAMESPACE::MessageListener> message_listener_;
 };
 
 } // namespace ons

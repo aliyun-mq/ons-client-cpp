@@ -49,8 +49,10 @@ void ONSConsumerAbstract::subscribe(absl::string_view topic, absl::string_view s
                       std::string(sub_expression.data(), sub_expression.length()));
 }
 
-void ONSConsumerAbstract::registerMessageListener(ROCKETMQ_NAMESPACE::MessageListener* mq_message_listener) {
-  consumer_.registerMessageListener(mq_message_listener);
+void ONSConsumerAbstract::registerMessageListener(
+    std::unique_ptr<ROCKETMQ_NAMESPACE::MessageListener> message_listener) {
+  message_listener_ = std::move(message_listener);
+  consumer_.registerMessageListener(message_listener_.get());
 }
 
 } // namespace ons
