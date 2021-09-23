@@ -14,7 +14,8 @@ public:
 
   virtual void shutdown() = 0;
 
-  virtual void subscribe(const char *topic, const char *expression) = 0;
+  virtual void subscribe(absl::string_view topic,
+                         absl::string_view expression) = 0;
 
   virtual void registerMessageListener(MessageOrderListener *listener) = 0;
 };

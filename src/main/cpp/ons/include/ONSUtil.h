@@ -16,11 +16,11 @@ public:
 
   static ONSUtil& get();
 
-  Message msgConvert(ROCKETMQ_NAMESPACE::MQMessage& message);
+  Message msgConvert(const ROCKETMQ_NAMESPACE::MQMessage& message);
 
-  Message msgConvert(ROCKETMQ_NAMESPACE::MQMessageExt& message_ext);
+  Message msgConvert(const ROCKETMQ_NAMESPACE::MQMessageExt& message_ext);
 
-  ROCKETMQ_NAMESPACE::MQMessage msgConvert(Message& message);
+  ROCKETMQ_NAMESPACE::MQMessage msgConvert(const Message& message);
 
 private:
   std::set<std::string> reserved_key_set_;

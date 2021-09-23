@@ -19,10 +19,10 @@ ONSUtil& ONSUtil::get() {
   return ons_util;
 }
 
-Message ONSUtil::msgConvert(ROCKETMQ_NAMESPACE::MQMessage& rocketmq_message) {
+Message ONSUtil::msgConvert(const ROCKETMQ_NAMESPACE::MQMessage& rocketmq_message) {
   Message message;
   if (!rocketmq_message.getTopic().empty()) {
-    message.setTopic(rocketmq_message.getTopic().c_str());
+    message.setTopic(rocketmq_message.getTopic());
   }
 
   if (!rocketmq_message.getKeys().empty()) {
@@ -32,7 +32,7 @@ Message ONSUtil::msgConvert(ROCKETMQ_NAMESPACE::MQMessage& rocketmq_message) {
   }
 
   if (!rocketmq_message.getTags().empty()) {
-    message.setTag(rocketmq_message.getTags().c_str());
+    message.setTag(rocketmq_message.getTags());
   }
 
   if (!rocketmq_message.getBody().empty()) {
@@ -48,13 +48,13 @@ Message ONSUtil::msgConvert(ROCKETMQ_NAMESPACE::MQMessage& rocketmq_message) {
       if (its == reserved_key_set_.end()) {
         auto ite = reserved_key_set_ext_.find(it->first);
         if (ite != reserved_key_set_ext_.end()) {
-          message.putSystemProperty((it->first).c_str(), (it->second).c_str());
-          SPDLOG_DEBUG("msgConvert: msg after putSystemProperties:{}", message.toSystemString().c_str());
+          message.putSystemProperty(it->first, it->second);
+          SPDLOG_DEBUG("msgConvert: msg after putSystemProperties:{}", message.toSystemString());
         }
         // User
         else {
-          message.putUserProperty((it->first).c_str(), (it->second).c_str());
-          SPDLOG_DEBUG("msgConvert: msg after putUserProperties:{}", message.toUserString().c_str());
+          message.putUserProperty(it->first, it->second);
+          SPDLOG_DEBUG("msgConvert: msg after putUserProperties:{}", message.toUserString());
         }
       }
     }
@@ -65,22 +65,25 @@ Message ONSUtil::msgConvert(ROCKETMQ_NAMESPACE::MQMessage& rocketmq_message) {
   return message;
 }
 
-Message ONSUtil::msgConvert(ROCKETMQ_NAMESPACE::MQMessageExt& rocketmq_message_ext) {
+Message ONSUtil::msgConvert(const ROCKETMQ_NAMESPACE::MQMessageExt& rocketmq_message_ext) {
   Message message;
 
   if (!rocketmq_message_ext.getTopic().empty()) {
-    message.setTopic(rocketmq_message_ext.getTopic().c_str());
+    message.setTopic(rocketmq_message_ext.getTopic());
   }
+
   if (!rocketmq_message_ext.getKeys().empty()) {
     // message.setKey(msgRMQ.getKeys().c_str());
   }
+
   if (!rocketmq_message_ext.getTags().empty()) {
-    message.setTag(rocketmq_message_ext.getTags().c_str());
+    message.setTag(rocketmq_message_ext.getTags());
   }
+
   if (!rocketmq_message_ext.getBody().empty()) {
     message.setBody(rocketmq_message_ext.getBody());
   }
-  message.setMsgID(rocketmq_message_ext.getMsgId().c_str());
+  message.setMsgID(rocketmq_message_ext.getMsgId());
 
   message.setReconsumeTimes(rocketmq_message_ext.getDeliveryAttempt());
 
@@ -113,7 +116,7 @@ Message ONSUtil::msgConvert(ROCKETMQ_NAMESPACE::MQMessageExt& rocketmq_message_e
   return message;
 }
 
-ROCKETMQ_NAMESPACE::MQMessage ONSUtil::msgConvert(Message& msg) {
+ROCKETMQ_NAMESPACE::MQMessage ONSUtil::msgConvert(const Message& msg) {
   ROCKETMQ_NAMESPACE::MQMessage message;
   if (!msg.getTopic().empty()) {
     message.setTopic(msg.getTopic());

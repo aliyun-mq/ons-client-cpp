@@ -11,6 +11,7 @@ public:
   virtual ~MessageOrderListener() = default;
 
   // interface of consuming message, should be realized by application
-  virtual OrderAction consume(Message& message, ConsumeOrderContext& context) = 0;
+  virtual OrderAction consume(const Message &message,
+                              const ConsumeOrderContext &context) = 0;
 };
 } // namespace ons
