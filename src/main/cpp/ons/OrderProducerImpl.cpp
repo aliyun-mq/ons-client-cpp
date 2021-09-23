@@ -31,8 +31,8 @@ OrderProducerImpl::OrderProducerImpl(const ONSFactoryProperty& factory_property)
   producer_.setCredentialsProvider(credentials_provider);
 
   if (access_point_) {
-    absl::string_view resource_namespace = access_point_.resourceNamespace();
-    producer_.setResourceNamespace(std::string(resource_namespace.data(), resource_namespace.length()));
+    std::string&& resource_namespace = access_point_.resourceNamespace();
+    producer_.setResourceNamespace(resource_namespace);
     producer_.setNamesrvAddr(access_point_.nameServerAddress());
   } else if (!factory_property.getNameSrvAddr().empty()) {
     producer_.setNamesrvAddr(factory_property.getNameSrvAddr());

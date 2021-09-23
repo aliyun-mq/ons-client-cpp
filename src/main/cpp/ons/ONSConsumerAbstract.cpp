@@ -29,7 +29,7 @@ ONSConsumerAbstract::ONSConsumerAbstract(const ONSFactoryProperty& factory_prope
   consumer_.setCredentialsProvider(credentials_provider);
 
   if (access_point_) {
-    consumer_.setResourceNamespace(access_point_.resourceNamespace().data());
+    consumer_.setResourceNamespace(access_point_.resourceNamespace());
     consumer_.setNamesrvAddr(access_point_.nameServerAddress());
   } else if (!factory_property.getNameSrvAddr().empty()) {
     consumer_.setNamesrvAddr(factory_property.getNameSrvAddr());
