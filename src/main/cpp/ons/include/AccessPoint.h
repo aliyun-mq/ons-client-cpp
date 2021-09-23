@@ -1,13 +1,21 @@
 #pragma once
 
-#include "absl/strings/string_view.h"
 #include <string>
+
+#include "absl/strings/string_view.h"
+
+#include "rocketmq/Logger.h"
+#include "rocketmq/RocketMQ.h"
+
+#include "spdlog/spdlog.h"
 
 namespace ons {
 
 class AccessPoint {
 public:
-  explicit AccessPoint(absl::string_view access_point) : access_point_(access_point.data(), access_point.length()) {}
+  explicit AccessPoint(absl::string_view access_point) : access_point_(access_point.data(), access_point.length()) {
+    SPDLOG_INFO("Resource namespace={}, name-server-address={}", resourceNamespace(), nameServerAddress());
+  }
 
   operator bool() const;
 

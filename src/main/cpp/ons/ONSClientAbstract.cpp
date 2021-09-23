@@ -1,5 +1,8 @@
 #include "ONSClientAbstract.h"
 
+#include "rocketmq/Logger.h"
+#include "spdlog/spdlog.h"
+
 namespace ons {
 
 // TODO: set AccessKey and SecretKey here.

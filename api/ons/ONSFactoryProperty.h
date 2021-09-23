@@ -17,7 +17,7 @@ namespace ons {
 
 class ONSCLIENT_API ONSFactoryProperty {
 public:
-  ONSFactoryProperty(bool set_defaults = false);
+  ONSFactoryProperty(bool set_defaults = true);
 
   virtual ~ONSFactoryProperty() = default;
 
