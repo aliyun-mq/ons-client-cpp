@@ -43,9 +43,11 @@ const char* ONSFactoryProperty::DEFAULT_CHANNEL = "ALIYUN";
 
 const std::string ONSFactoryProperty::EMPTY_STRING;
 
-ONSFactoryProperty::ONSFactoryProperty() {
-  setDefaults();
-  loadConfigFile();
+ONSFactoryProperty::ONSFactoryProperty(bool set_defaults) {
+  if (set_defaults) {
+    setDefaults();
+    loadConfigFile();
+  }
 }
 
 void ONSFactoryProperty::setDefaults() {

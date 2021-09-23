@@ -12,6 +12,17 @@ cc_test(
 )
 
 cc_test(
+    name = "ons_factory_property_test",
+    srcs = [
+        "ONSFactoryPropertyTest.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+        "@com_google_googletest//:gtest_main",
+    ]
+)
+
+cc_test(
     name = "ons_environment_variable_factory_property_test",
     srcs = [
         "ONSEnvironmentVariableFactoryPropertyTest.cpp",
