@@ -26,6 +26,8 @@ public:
 
     case OrderAction::Suspend:
       return ROCKETMQ_NAMESPACE::ConsumeMessageResult::FAILURE;
+    default:
+      return ROCKETMQ_NAMESPACE::ConsumeMessageResult::SUCCESS;
     }
   }
 
