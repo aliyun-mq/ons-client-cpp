@@ -55,16 +55,6 @@ public:
   // Acquire a copy all application specific key-value pairs.
   std::map<std::string, std::string> getUserProperties() const;
 
-  // systemProperties only save parameters defined in SystemPropKey, please do
-  // not add other parameters into systemProperties, otherwise it was not saved.
-  void putSystemProperty(absl::string_view key, absl::string_view value);
-
-  std::string getSystemProperty(absl::string_view key) const;
-
-  void setSystemProperties(const std::map<std::string, std::string>& system_properties);
-
-  std::map<std::string, std::string> getSystemProperties() const;
-
   std::string getTopic() const;
   void setTopic(absl::string_view topic);
 
@@ -77,7 +67,7 @@ public:
   std::string getMsgID() const;
   void setMsgID(absl::string_view message_id);
 
-  absl::optional<std::chrono::system_clock::time_point> getStartDeliverTime() const;
+  std::chrono::system_clock::time_point getStartDeliverTime() const;
 
   void setStartDeliverTime(std::chrono::system_clock::time_point delivery_timepoint);
 
@@ -89,10 +79,6 @@ public:
   std::chrono::system_clock::time_point getStoreTimestamp() const;
 
   std::chrono::system_clock::time_point getBornTimestamp() const { return born_timestamp_; }
-
-  std::string toString() const;
-
-  std::string toSystemString() const;
 
   std::string toUserString() const;
 
@@ -107,17 +93,22 @@ protected:
 
   void setReconsumeTimes(std::int32_t reconsume_times);
 
+  std::string toString() const;
+
   friend class ONSUtil;
 
 private:
   std::string topic_;
+  std::string tag_;
   std::string body_;
+  std::string message_id_;
   std::chrono::system_clock::time_point store_timestamp_{std::chrono::system_clock::now()};
   std::chrono::system_clock::time_point born_timestamp_{std::chrono::system_clock::now()};
+  std::chrono::system_clock::time_point delivery_timestamp_{std::chrono::system_clock::now()};
   std::int64_t queue_offset_{0};
-  std::map<std::string, std::string> system_properties_;
   std::map<std::string, std::string> user_properties_;
   std::vector<std::string> keys_;
+  std::int32_t reconsume_times_{0};
 };
 
 } // namespace ons

@@ -1,6 +1,7 @@
 #include "ONSUtil.h"
 
 #include <chrono>
+#include <cstdint>
 
 #include "Protocol.h"
 #include "rocketmq/RocketMQ.h"
@@ -19,52 +20,6 @@ ONSUtil& ONSUtil::get() {
   return ons_util;
 }
 
-Message ONSUtil::msgConvert(const ROCKETMQ_NAMESPACE::MQMessage& rocketmq_message) {
-  Message message;
-  if (!rocketmq_message.getTopic().empty()) {
-    message.setTopic(rocketmq_message.getTopic());
-  }
-
-  if (!rocketmq_message.getKeys().empty()) {
-    for (const auto& key : rocketmq_message.getKeys()) {
-      message.attachKey(key);
-    }
-  }
-
-  if (!rocketmq_message.getTags().empty()) {
-    message.setTag(rocketmq_message.getTags());
-  }
-
-  if (!rocketmq_message.getBody().empty()) {
-    message.setBody(rocketmq_message.getBody());
-  }
-
-  std::map<std::string, std::string> properties = rocketmq_message.getProperties();
-  if (!properties.empty()) {
-    auto it = properties.begin();
-    for (; it != properties.end(); ++it) {
-      // System
-      auto its = reserved_key_set_.find(it->first);
-      if (its == reserved_key_set_.end()) {
-        auto ite = reserved_key_set_ext_.find(it->first);
-        if (ite != reserved_key_set_ext_.end()) {
-          message.putSystemProperty(it->first, it->second);
-          SPDLOG_DEBUG("msgConvert: msg after putSystemProperties:{}", message.toSystemString());
-        }
-        // User
-        else {
-          message.putUserProperty(it->first, it->second);
-          SPDLOG_DEBUG("msgConvert: msg after putUserProperties:{}", message.toUserString());
-        }
-      }
-    }
-  }
-  SPDLOG_DEBUG("msgConvert: after msgConvert, Message:{}, systemString:{}, "
-               "userString:{}",
-               message.toString().c_str(), message.toSystemString().c_str(), message.toUserString().c_str());
-  return message;
-}
-
 Message ONSUtil::msgConvert(const ROCKETMQ_NAMESPACE::MQMessageExt& rocketmq_message_ext) {
   Message message;
 
@@ -73,7 +28,9 @@ Message ONSUtil::msgConvert(const ROCKETMQ_NAMESPACE::MQMessageExt& rocketmq_mes
   }
 
   if (!rocketmq_message_ext.getKeys().empty()) {
-    // message.setKey(msgRMQ.getKeys().c_str());
+    for (const auto& key : rocketmq_message_ext.getKeys()) {
+      message.attachKey(key);
+    }
   }
 
   if (!rocketmq_message_ext.getTags().empty()) {
@@ -96,21 +53,26 @@ Message ONSUtil::msgConvert(const ROCKETMQ_NAMESPACE::MQMessageExt& rocketmq_mes
   message.setQueueOffset(rocketmq_message_ext.getQueueOffset());
 
   std::map<std::string, std::string> properties = rocketmq_message_ext.getProperties();
-  if (!properties.empty()) {
-    auto it = properties.begin();
-    for (; it != properties.end(); ++it) {
-      // System
-      auto its = reserved_key_set_.find(it->first);
-      if (its == reserved_key_set_.end()) {
-        auto ite = reserved_key_set_ext_.find(it->first);
-        if (ite != reserved_key_set_ext_.end()) {
-          message.putSystemProperty(it->first, it->second);
-        }
-        // User
-        else {
-          message.putUserProperty(it->first, it->second);
+  for (const auto& entry : properties) {
+    if (reserved_key_set_ext_.contains(entry.first)) {
+      if (SystemPropKey::TAG == entry.first) {
+        message.setTag(entry.second);
+        continue;
+      }
+
+      if (SystemPropKey::MSGID == entry.first) {
+        message.setMsgID(entry.second);
+        continue;
+      }
+
+      if (SystemPropKey::RECONSUMETIMES == entry.first) {
+        std::int32_t reconsume_times;
+        if (absl::SimpleAtoi(entry.second, &reconsume_times)) {
+          message.setReconsumeTimes(reconsume_times);
         }
       }
+    } else {
+      message.putUserProperty(entry.first, entry.second);
     }
   }
   return message;
@@ -130,10 +92,10 @@ ROCKETMQ_NAMESPACE::MQMessage ONSUtil::msgConvert(const Message& msg) {
     message.setTags(msg.getTag());
   }
 
-  absl::optional<std::chrono::system_clock::time_point> delivery_timepoint = msg.getStartDeliverTime();
-  if (delivery_timepoint.has_value()) {
+  auto delivery_timepoint = msg.getStartDeliverTime();
+  if (delivery_timepoint > std::chrono::system_clock::now()) {
     auto delivery_ms =
-        std::chrono::duration_cast<std::chrono::milliseconds>(delivery_timepoint->time_since_epoch()).count();
+        std::chrono::duration_cast<std::chrono::milliseconds>(delivery_timepoint.time_since_epoch()).count();
     message.setProperty(SystemPropKey::STARTDELIVERTIME, std::to_string(delivery_ms));
   }
 

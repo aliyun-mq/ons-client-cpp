@@ -1,6 +1,6 @@
 #pragma once
 
-#include <set>
+#include "absl/container/flat_hash_set.h"
 
 #include "ons/Message.h"
 #include "rocketmq/Logger.h"
@@ -16,15 +16,26 @@ public:
 
   static ONSUtil& get();
 
-  Message msgConvert(const ROCKETMQ_NAMESPACE::MQMessage& message);
-
+  /**
+   * @brief This function translates messages from RocketMQ representation back to ONS. It should be employed during
+   * message consumption procedure.
+   *
+   * @param message_ext
+   * @return Message
+   */
   Message msgConvert(const ROCKETMQ_NAMESPACE::MQMessageExt& message_ext);
 
+  /**
+   * @brief This function translates ONS message to RocketMQ counterpart. It should be used when delivering messages to
+   * brokers.
+   *
+   * @param message
+   * @return ROCKETMQ_NAMESPACE::MQMessage
+   */
   ROCKETMQ_NAMESPACE::MQMessage msgConvert(const Message& message);
 
 private:
-  std::set<std::string> reserved_key_set_;
-  std::set<std::string> reserved_key_set_ext_;
+  absl::flat_hash_set<std::string> reserved_key_set_ext_;
 };
 
 } // namespace ons

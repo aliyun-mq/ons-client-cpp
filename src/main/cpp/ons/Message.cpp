@@ -34,39 +34,6 @@ Message::Message(absl::string_view topic, absl::string_view tag, absl::string_vi
   }
 }
 
-void Message::putSystemProperty(absl::string_view key, absl::string_view value) {
-  if (key.empty() || value.empty()) {
-    return;
-  }
-
-  std::string k(key.data(), key.length());
-  std::string v(value.data(), value.length());
-
-  auto search = system_properties_.find(k);
-  if (system_properties_.end() != search) {
-    system_properties_.erase(search);
-  }
-
-  system_properties_.insert({k, v});
-}
-
-std::string Message::getSystemProperty(absl::string_view key) const {
-  std::string k(key.data(), key.length());
-  auto it = system_properties_.find(k);
-  if (system_properties_.end() != it) {
-    return it->second;
-  }
-  return std::string();
-}
-
-void Message::setSystemProperties(const std::map<std::string, std::string>& system_properties) {
-  for (const auto& it : system_properties) {
-    putSystemProperty(it.first, it.second);
-  }
-}
-
-std::map<std::string, std::string> Message::getSystemProperties() const { return system_properties_; }
-
 void Message::putUserProperty(absl::string_view key, absl::string_view value) {
   std::string k(key.data(), key.length());
   std::string v(value.data(), value.length());
@@ -107,23 +74,23 @@ void Message::setTopic(absl::string_view topic) {
   topic_ = std::string(topic.data(), topic.length());
 }
 
-std::string Message::getTag() const { return getSystemProperty(SystemPropKey::TAG); }
+std::string Message::getTag() const { return tag_; }
 
 void Message::setTag(absl::string_view tag) {
   if (tag.empty()) {
     return;
   }
 
-  putSystemProperty(SystemPropKey::TAG, tag);
+  tag_ = std::string(tag.data(), tag.length());
 }
 
-std::string Message::getMsgID() const { return getSystemProperty(SystemPropKey::MSGID); }
+std::string Message::getMsgID() const { return message_id_; }
 
 void Message::setMsgID(absl::string_view message_id) {
   if (message_id.empty()) {
     return;
   }
-  putSystemProperty(SystemPropKey::MSGID, message_id);
+  message_id_ = std::string(message_id.data(), message_id.length());
 }
 
 std::vector<std::string> Message::getKeys() const { return keys_; }
@@ -136,24 +103,10 @@ void Message::attachKey(absl::string_view key) {
   keys_.push_back(std::string(key.data(), key.length()));
 }
 
-absl::optional<std::chrono::system_clock::time_point> Message::getStartDeliverTime() const {
-  std::string&& ms_since_epoch = getSystemProperty(SystemPropKey::STARTDELIVERTIME);
-  if (ms_since_epoch.empty()) {
-    return absl::make_optional<std::chrono::system_clock::time_point>();
-  }
-
-  std::int64_t millis;
-  if (absl::SimpleAtoi(ms_since_epoch, &millis)) {
-    return std::chrono::system_clock::time_point() + std::chrono::milliseconds(millis);
-  }
-
-  return absl::make_optional<std::chrono::system_clock::time_point>();
-}
+std::chrono::system_clock::time_point Message::getStartDeliverTime() const { return delivery_timestamp_; }
 
 void Message::setStartDeliverTime(std::chrono::system_clock::time_point delivery_timepoint) {
-  auto delivery_ms =
-      std::chrono::duration_cast<std::chrono::milliseconds>(delivery_timepoint.time_since_epoch()).count();
-  putSystemProperty(SystemPropKey::STARTDELIVERTIME, std::to_string(delivery_ms));
+  delivery_timestamp_ = delivery_timepoint;
 }
 
 std::string Message::getBody() const { return body_; }
@@ -166,23 +119,9 @@ void Message::setBody(absl::string_view body) {
   body_ = std::string(body.data(), body.length());
 }
 
-std::int32_t Message::getReconsumeTimes() const {
-  std::string&& reconsume_time = getSystemProperty(SystemPropKey::RECONSUMETIMES);
-  if (reconsume_time.empty()) {
-    return 0;
-  }
+std::int32_t Message::getReconsumeTimes() const { return reconsume_times_; }
 
-  std::int32_t delivery_attempt = 0;
-  if (absl::SimpleAtoi(reconsume_time, &delivery_attempt)) {
-    return delivery_attempt;
-  }
-
-  return 0;
-}
-
-void Message::setReconsumeTimes(std::int32_t reconsume_times) {
-  putSystemProperty(SystemPropKey::RECONSUMETIMES, std::to_string(reconsume_times));
-}
+void Message::setReconsumeTimes(std::int32_t reconsume_times) { reconsume_times_ = reconsume_times; }
 
 std::chrono::system_clock::time_point Message::getStoreTimestamp() const { return store_timestamp_; }
 
@@ -199,8 +138,6 @@ std::string Message::toString() const {
   ss << "Message [topic=" << topic_ << ", body=" << body_ << "]";
   return ss.str();
 }
-
-std::string Message::toSystemString() const { return absl::StrJoin(system_properties_, ",", absl::PairFormatter("=")); }
 
 std::string Message::toUserString() const { return absl::StrJoin(user_properties_, ",", absl::PairFormatter("=")); }
 
