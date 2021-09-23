@@ -1,5 +1,6 @@
 #include "ons/ONSFactory.h"
 #include "rocketmq/Logger.h"
+
 #include <iostream>
 
 using namespace std;
@@ -26,7 +27,7 @@ int main(int argc, char* argv[]) {
   Message msg("cpp_sdk_standard", "Your Tag", "Your Key", "This message body.");
 
   auto start = std::chrono::system_clock::now();
-  int count = 32;
+  int count = 300;
   for (int i = 0; i < count; ++i) {
     try {
       SendResultONS sendResult = producer->send(msg);
@@ -36,8 +37,9 @@ int main(int argc, char* argv[]) {
     }
   }
   auto interval = std::chrono::system_clock::now() - start;
-  std::cout << "Send " << count << " messages OK, costs "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(interval).count() << "ms" << std::endl;
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(interval).count();
+  std::cout << "Send " << count << " messages OK, costs " << ms << "ms. AVG QPS: " << count * 1000 * 1.0 / ms
+            << " AVG Latency: " << ms * 1.0 / count << "ms" << std::endl;
 
   // Keep main thread running until process finished.
   producer->shutdown();
