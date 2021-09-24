@@ -7,6 +7,7 @@
 #include "ons/Producer.h"
 #include "rocketmq/DefaultMQProducer.h"
 #include "rocketmq/RocketMQ.h"
+#include <system_error>
 
 namespace ons {
 class ProducerImpl : public Producer, public ONSClientAbstract {
@@ -20,8 +21,6 @@ public:
   void shutdown() override;
 
   SendResultONS send(Message& message) noexcept(false) override;
-
-  SendResultONS send(Message& message, const MessageQueueONS& message_queue) noexcept(false) override;
 
   void sendAsync(Message& message, SendCallbackONS* callback) noexcept override;
 

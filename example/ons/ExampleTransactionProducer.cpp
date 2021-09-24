@@ -15,7 +15,7 @@ namespace ons {
 
 class ExampleLocalTransactionChecker : public LocalTransactionChecker {
 public:
-  TransactionStatus check(Message& msg) noexcept override { return TransactionStatus::CommitTransaction; }
+  TransactionStatus check(const Message& msg) noexcept override { return TransactionStatus::CommitTransaction; }
 };
 
 class ExampleLocalTransactionExecutor : public LocalTransactionExecuter {

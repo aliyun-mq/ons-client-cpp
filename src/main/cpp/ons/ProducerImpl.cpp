@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <memory>
+#include <system_error>
 
 #include "ONSUtil.h"
 #include "absl/strings/ascii.h"
@@ -54,17 +55,6 @@ SendResultONS ProducerImpl::send(Message& message) {
   ROCKETMQ_NAMESPACE::MQMessage mq_message = ONSUtil::get().msgConvert(message);
 
   ROCKETMQ_NAMESPACE::SendResult send_result = producer_.send(mq_message);
-
-  SendResultONS send_result_ons;
-  send_result_ons.setMessageId(send_result.getMsgId());
-  return send_result_ons;
-}
-
-SendResultONS ProducerImpl::send(Message& message, const MessageQueueONS& message_queue_ons) {
-  ROCKETMQ_NAMESPACE::MQMessage mq_message = ONSUtil::get().msgConvert(message);
-  ROCKETMQ_NAMESPACE::MQMessageQueue mq_message_queue = messageQueueConvert(message_queue_ons);
-
-  ROCKETMQ_NAMESPACE::SendResult send_result = producer_.send(mq_message, mq_message_queue);
 
   SendResultONS send_result_ons;
   send_result_ons.setMessageId(send_result.getMsgId());

@@ -13,7 +13,7 @@ std::mutex console_mtx;
 
 class ExampleMessageListener : public MessageListener {
 public:
-  Action consume(Message& message, ConsumeContext& context) noexcept override {
+  Action consume(const Message& message, ConsumeContext& context) noexcept override {
     std::lock_guard<std::mutex> lk(console_mtx);
     auto latency = std::chrono::system_clock::now() - message.getStoreTimestamp();
     auto latency2 = std::chrono::system_clock::now() - message.getBornTimestamp();

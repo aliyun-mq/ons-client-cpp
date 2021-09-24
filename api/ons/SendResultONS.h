@@ -21,6 +21,8 @@ public:
 
   const std::string &getMessageId() const;
 
+  operator bool() { return !message_id_.empty(); }
+
 protected:
   void setMessageId(absl::string_view message_id);
 
