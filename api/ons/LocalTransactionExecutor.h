@@ -8,7 +8,7 @@ class LocalTransactionExecutor {
 public:
   virtual ~LocalTransactionExecutor() = default;
 
-  virtual TransactionStatus execute(const Message& msg) = 0;
+  virtual TransactionStatus execute(const Message& msg) noexcept = 0;
 };
 
 // Keep API compatible

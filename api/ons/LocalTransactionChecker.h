@@ -7,12 +7,9 @@ namespace ons {
 
 class LocalTransactionChecker {
 public:
-  LocalTransactionChecker() = default;
-
-
   virtual ~LocalTransactionChecker() = default;
 
-  virtual TransactionStatus check(Message &msg) = 0;
+  virtual TransactionStatus check(Message& msg) noexcept = 0;
 };
 
 } // namespace ons
