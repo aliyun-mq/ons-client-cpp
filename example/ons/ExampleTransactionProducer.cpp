@@ -15,12 +15,12 @@ namespace ons {
 
 class ExampleLocalTransactionChecker : public LocalTransactionChecker {
 public:
-  TransactionStatus check(Message& msg) override { return TransactionStatus::CommitTransaction; }
+  TransactionStatus check(Message& msg) noexcept override { return TransactionStatus::CommitTransaction; }
 };
 
 class ExampleLocalTransactionExecutor : public LocalTransactionExecuter {
 public:
-  TransactionStatus execute(const Message& msg) override { return TransactionStatus::CommitTransaction; }
+  TransactionStatus execute(const Message& msg) noexcept override { return TransactionStatus::CommitTransaction; }
 };
 
 } // namespace ons
