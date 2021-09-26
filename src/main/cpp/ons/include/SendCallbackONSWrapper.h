@@ -1,5 +1,7 @@
 #pragma once
 
+#include <system_error>
+
 #include "ons/ONSCallback.h"
 #include "rocketmq/AsyncCallback.h"
 #include "rocketmq/RocketMQ.h"
@@ -9,9 +11,9 @@ class SendCallbackONSWrapper : public ROCKETMQ_NAMESPACE::SendCallback {
 public:
   explicit SendCallbackONSWrapper(SendCallbackONS* callback);
 
-  void onSuccess(ROCKETMQ_NAMESPACE::SendResult& send_result) override;
+  void onSuccess(ROCKETMQ_NAMESPACE::SendResult& send_result) noexcept override;
 
-  void onException(const ROCKETMQ_NAMESPACE::MQException& e) override;
+  void onFailure(const std::error_code& ec) noexcept override;
 
 private:
   SendCallbackONS* send_callback_ons_ptr_{};

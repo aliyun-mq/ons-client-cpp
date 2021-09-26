@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <system_error>
 
 #include "absl/base/thread_annotations.h"
 #include "absl/synchronization/mutex.h"
@@ -30,20 +31,22 @@ public:
 
   ~ONSSendCallback() override = default;
 
-  void onSuccess(ROCKETMQ_NAMESPACE::SendResult& send_result) override {
+  void onSuccess(ROCKETMQ_NAMESPACE::SendResult& send_result) noexcept override {
     SendResultONS resultONS;
     resultONS.setMessageId(send_result.getMsgId());
     assert(callback_ != nullptr);
     callback_->onSuccess(resultONS);
   }
 
-  void onException(const ROCKETMQ_NAMESPACE::MQException& e) override {
-    ONSClientException ons_exception(e.what(), -1);
+  void onFailure(const std::error_code& ec) noexcept override {
+    ONSClientException ons_exception(ec.message(), ec.value());
     assert(callback_ != nullptr);
     callback_->onException(ons_exception);
   }
 
-  void SetOnsCallBack(SendCallbackONS* send_callback) { callback_ = send_callback; }
+  void setOnsCallBack(SendCallbackONS* send_callback) {
+    callback_ = send_callback;
+  }
 
 private:
   SendCallbackONS* callback_{nullptr};

@@ -35,7 +35,7 @@ public:
    * @return ons::SendResultONS
    * @throw ONSClientException
    */
-  virtual ons::SendResultONS send(Message &message) noexcept(false) = 0;
+  virtual ons::SendResultONS send(Message& message) noexcept(false) = 0;
 
   /**
    * @brief Send message asynchronously.
@@ -43,11 +43,10 @@ public:
    * @param msg
    * @param callback
    */
-  virtual void sendAsync(Message &message,
-                         ons::SendCallbackONS *callback) noexcept = 0;
+  virtual void sendAsync(Message& message, ons::SendCallbackONS* callback) noexcept = 0;
 
   // one-way send
-  virtual void sendOneway(Message &message) noexcept = 0;
+  virtual void sendOneway(Message& message) noexcept = 0;
 };
 
 } // namespace ons

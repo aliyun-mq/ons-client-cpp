@@ -1,12 +1,14 @@
+
 #include "SendCallbackONSWrapper.h"
 #include "rocketmq/RocketMQ.h"
 
 namespace ons {
 
 SendCallbackONSWrapper::SendCallbackONSWrapper(SendCallbackONS* send_callback_ons_ptr)
-    : send_callback_ons_ptr_(send_callback_ons_ptr) {}
+    : send_callback_ons_ptr_(send_callback_ons_ptr) {
+}
 
-void SendCallbackONSWrapper::onSuccess(ROCKETMQ_NAMESPACE::SendResult& send_result) {
+void SendCallbackONSWrapper::onSuccess(ROCKETMQ_NAMESPACE::SendResult& send_result) noexcept {
   if (nullptr == send_callback_ons_ptr_) {
     return;
   }
@@ -15,11 +17,12 @@ void SendCallbackONSWrapper::onSuccess(ROCKETMQ_NAMESPACE::SendResult& send_resu
   send_callback_ons_ptr_->onSuccess(send_result_ons);
 }
 
-void SendCallbackONSWrapper::onException(const ROCKETMQ_NAMESPACE::MQException& e) {
+void SendCallbackONSWrapper::onFailure(const std::error_code& ec) noexcept {
   if (nullptr == send_callback_ons_ptr_) {
     return;
   }
-  ONSClientException ons_client_exception(e.what());
+
+  ONSClientException ons_client_exception(ec.message(), ec.value());
   send_callback_ons_ptr_->onException(ons_client_exception);
 }
 
