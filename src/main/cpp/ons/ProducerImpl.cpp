@@ -47,15 +47,30 @@ ProducerImpl::ProducerImpl(const ONSFactoryProperty& factory_property)
   }
 }
 
-void ProducerImpl::start() { producer_.start(); }
+void ProducerImpl::start() {
+  producer_.start();
+}
 
-void ProducerImpl::shutdown() { producer_.shutdown(); }
+void ProducerImpl::shutdown() {
+  producer_.shutdown();
+}
 
 SendResultONS ProducerImpl::send(Message& message) {
   ROCKETMQ_NAMESPACE::MQMessage mq_message = ONSUtil::get().msgConvert(message);
 
   ROCKETMQ_NAMESPACE::SendResult send_result = producer_.send(mq_message);
 
+  SendResultONS send_result_ons;
+  send_result_ons.setMessageId(send_result.getMsgId());
+  return send_result_ons;
+}
+
+SendResultONS ProducerImpl::send(Message& message, std::error_code& ec) noexcept {
+  ROCKETMQ_NAMESPACE::MQMessage mq_message = ONSUtil::get().msgConvert(message);
+  ROCKETMQ_NAMESPACE::SendResult send_result = producer_.send(mq_message, ec);
+  if (ec) {
+    return {};
+  }
   SendResultONS send_result_ons;
   send_result_ons.setMessageId(send_result.getMsgId());
   return send_result_ons;

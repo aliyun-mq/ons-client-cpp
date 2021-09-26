@@ -38,6 +38,15 @@ public:
   virtual ons::SendResultONS send(Message& message) noexcept(false) = 0;
 
   /**
+   * @brief Similar to the previous send(Message&) function, with one difference: this function is noexcept.
+   *
+   * @param message
+   * @param ec
+   * @return ons::SendResultONS
+   */
+  virtual ons::SendResultONS send(Message& message, std::error_code& ec) noexcept = 0;
+
+  /**
    * @brief Send message asynchronously.
    *
    * @param msg

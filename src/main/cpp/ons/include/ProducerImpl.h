@@ -22,6 +22,8 @@ public:
 
   SendResultONS send(Message& message) noexcept(false) override;
 
+  SendResultONS send(Message& message, std::error_code& ec) noexcept override;
+
   void sendAsync(Message& message, SendCallbackONS* callback) noexcept override;
 
   void sendOneway(Message& message) noexcept override;

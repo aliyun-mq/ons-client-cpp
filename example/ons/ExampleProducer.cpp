@@ -1,7 +1,9 @@
 #include "ons/ONSFactory.h"
 #include "rocketmq/Logger.h"
 
+#include <chrono>
 #include <iostream>
+#include <system_error>
 
 using namespace std;
 using namespace ons;
@@ -26,8 +28,11 @@ int main(int argc, char* argv[]) {
   producer->start();
   Message msg("cpp_sdk_standard", "Your Tag", "Your Key", "This message body.");
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  //                             Send with exception                                                //
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   auto start = std::chrono::system_clock::now();
-  int count = 300;
+  int count = 256;
   for (int i = 0; i < count; ++i) {
     try {
       SendResultONS sendResult = producer->send(msg);
@@ -38,6 +43,24 @@ int main(int argc, char* argv[]) {
   }
   auto interval = std::chrono::system_clock::now() - start;
   auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(interval).count();
+  std::cout << "Send " << count << " messages OK, costs " << ms << "ms. AVG QPS: " << count * 1000 * 1.0 / ms
+            << " AVG Latency: " << ms * 1.0 / count << "ms" << std::endl;
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  //                            Send without exception support                                      //
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  start = std::chrono::system_clock::now();
+  for (int i = 0; i < count; i++) {
+    std::error_code ec;
+    SendResultONS send_result = producer->send(msg, ec);
+    if (ec) {
+      std::cerr << "Failed to send message. Cause: " << ec.message() << std::endl;
+      continue;
+    }
+    std::cout << "MessageID: " << send_result.getMessageId() << std::endl;
+  }
+  interval = std::chrono::system_clock::now() - start;
+  ms = std::chrono::duration_cast<std::chrono::milliseconds>(interval).count();
   std::cout << "Send " << count << " messages OK, costs " << ms << "ms. AVG QPS: " << count * 1000 * 1.0 / ms
             << " AVG Latency: " << ms * 1.0 / count << "ms" << std::endl;
 
