@@ -5,10 +5,10 @@
 
 #include "absl/base/thread_annotations.h"
 #include "absl/synchronization/mutex.h"
+
 #include "ons/ONSCallback.h"
 #include "rocketmq/AsyncCallback.h"
 #include "rocketmq/MQClientException.h"
-#include "rocketmq/RocketMQ.h"
 #include "rocketmq/SendResult.h"
 
 namespace ons {
