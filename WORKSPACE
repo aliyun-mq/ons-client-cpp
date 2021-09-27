@@ -4,11 +4,10 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "org_apache_rocketmq",
-    sha256 = "d250620e9a5452abb7eb3b233af2da8abeb1460dd9450bcfad4084cb800b5618",
     urls = [
-        "https://github.com/lizhanhui/rocketmq-client-cpp/archive/refs/tags/v1.0-alpha7.tar.gz",
+        "https://github.com/lizhanhui/rocketmq-client-cpp/archive/4aa75ac1f7976400cd97c9f9819407d1d31f0339.zip",
     ],
-    strip_prefix = "rocketmq-client-cpp-1.0-alpha7",
+    strip_prefix = "rocketmq-client-cpp-4aa75ac1f7976400cd97c9f9819407d1d31f0339",
 )
 
 load("@org_apache_rocketmq//bazel:rocketmq_deps.bzl", "rocketmq_deps")

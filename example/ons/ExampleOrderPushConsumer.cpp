@@ -5,12 +5,15 @@
 
 #include "ons/ONSFactory.h"
 #include "rocketmq/Logger.h"
+#include "spdlog/spdlog.h"
 
 using namespace ons;
 
 class ExampleMessageOrderListener : public ons::MessageOrderListener {
 public:
   OrderAction consume(const Message& message, const ConsumeOrderContext& context) noexcept override {
+    SPDLOG_INFO("Consume message[MsgId={}] OK", message.getMsgID());
+    std::cout << "Consume Message[MsgId=" << message.getMsgID() << "] OK" << std::endl;
     return OrderAction::Success;
   }
 };
