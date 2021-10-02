@@ -18,6 +18,7 @@ public:
     auto latency = std::chrono::system_clock::now() - message.getStoreTimestamp();
     auto latency2 = std::chrono::system_clock::now() - message.getBornTimestamp();
     std::cout << "Received a message. Topic: " << message.getTopic() << ", MsgId: " << message.getMsgID()
+              << ", Body-size: " << message.getBody().size()
               << ", Current - Store-Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(latency).count()
               << "ms, Current - Born-Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(latency2).count()
               << "ms" << std::endl;
@@ -27,7 +28,7 @@ public:
 
 int main(int argc, char* argv[]) {
   rocketmq::Logger& logger = rocketmq::getLogger();
-  logger.setLevel(rocketmq::Level::Debug);
+  logger.setLevel(rocketmq::Level::Info);
   logger.init();
 
   std::cout << "=======Before consuming messages=======" << std::endl;
