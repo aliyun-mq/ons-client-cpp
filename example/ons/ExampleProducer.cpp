@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
   //                             Send with exception                                                //
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   auto start = std::chrono::system_clock::now();
-  int count = 1024;
+  int count = 32;
   for (int i = 0; i < count; ++i) {
     try {
       SendResultONS sendResult = producer->send(msg);
