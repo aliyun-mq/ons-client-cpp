@@ -1,11 +1,18 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "ons_hdrs",
+    srcs = glob(["ons/*.h"])
+)
+
 cc_library(
     name = "ons_interface",
-    hdrs = glob(["ons/*.h"]),
-    strip_include_prefix = "//api",
-    visibility = [
-        "//visibility:public",
+    hdrs = [
+        ":ons_hdrs",
     ],
+    strip_include_prefix = "//api",
     deps = [
         "@org_apache_rocketmq//api:rocketmq_interface",
         "@com_google_absl//absl/strings",

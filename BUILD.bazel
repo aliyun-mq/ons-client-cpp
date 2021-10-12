@@ -1,0 +1,49 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar", "pkg_deb")
+
+pkg_tar(
+    name = "ons-lib",
+    extension = "tar.gz",
+    package_dir = "/lib",
+    srcs = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+    stamp = 1,
+    mode = "0755",
+)
+
+pkg_tar(
+    name = "ons-hdrs",
+    extension = "tar.gz",
+    srcs = [
+        "//api:ons_hdrs",
+    ],
+    package_dir = "/include/ons",
+    mode = "0755",
+    stamp = 1,
+)
+
+pkg_tar(
+    name = "ons-data",
+    extension = "tar.gz",
+    deps = [
+        ":ons-hdrs",
+        ":ons-lib",
+    ],
+)
+
+pkg_deb(
+    name = "ons",
+    architecture = "amd64",
+    built_using = "unzip (6.0.1)",
+    data = ":ons-data",
+    depends = [
+        "zlib1g-dev",
+        "unzip",
+    ],
+#    description_file = "debian/description",
+    description = "ONS SDK",
+    homepage = "https://www.aliyun.com/product/rocketmq",
+    maintainer = "Li Zhanhui <shutian.lzh@alibaba-inc.com>",
+    package = "ons-client-cpp",
+    version = "0.1",
+)
