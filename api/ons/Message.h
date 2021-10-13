@@ -8,9 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
-
 #include "ONSClient.h"
 
 namespace ons {
@@ -34,20 +31,20 @@ class ONSCLIENT_API Message {
 public:
   Message() = default;
 
-  Message(absl::string_view topic, absl::string_view body);
+  Message(const std::string& topic, const std::string& body);
 
-  Message(absl::string_view topic, absl::string_view tag, absl::string_view body);
+  Message(const std::string& topic, const std::string& tag, const std::string& body);
 
-  Message(absl::string_view topic, absl::string_view tag, absl::string_view key, absl::string_view body);
+  Message(const std::string& topic, const std::string& tag, const std::string& key, const std::string& body);
 
   virtual ~Message() = default;
 
   // Developers may attach application specific key-value pairs to message,
   // which will be accessible at consuming stage.
-  void putUserProperty(absl::string_view key, absl::string_view value);
+  void putUserProperty(const std::string& key, const std::string& value);
 
   // Used to acquire the key-value pair as was put before the message is sent.
-  std::string getUserProperty(absl::string_view key) const;
+  std::string getUserProperty(const std::string& key) const;
 
   // To put key-value pairs in batch.
   void setUserProperties(const std::map<std::string, std::string>& user_properties);
@@ -56,29 +53,31 @@ public:
   std::map<std::string, std::string> getUserProperties() const;
 
   std::string getTopic() const;
-  void setTopic(absl::string_view topic);
+  void setTopic(const std::string& topic);
 
   std::string getTag() const;
-  void setTag(absl::string_view tags);
+  void setTag(const std::string& tags);
 
   std::vector<std::string> getKeys() const;
-  void attachKey(absl::string_view key);
+  void attachKey(const std::string& key);
 
   std::string getMsgID() const;
-  void setMsgID(absl::string_view message_id);
+  void setMsgID(const std::string& message_id);
 
   std::chrono::system_clock::time_point getStartDeliverTime() const;
 
   void setStartDeliverTime(std::chrono::system_clock::time_point delivery_timepoint);
 
   std::string getBody() const;
-  void setBody(absl::string_view body);
+  void setBody(const std::string& body);
 
   std::int32_t getReconsumeTimes() const;
 
   std::chrono::system_clock::time_point getStoreTimestamp() const;
 
-  std::chrono::system_clock::time_point getBornTimestamp() const { return born_timestamp_; }
+  std::chrono::system_clock::time_point getBornTimestamp() const {
+    return born_timestamp_;
+  }
 
   std::string toUserString() const;
 
@@ -87,7 +86,9 @@ public:
 protected:
   void setStoreTimestamp(std::chrono::system_clock::time_point store_timestamp);
 
-  void setBornTimestamp(std::chrono::system_clock::time_point born_timestamp) { born_timestamp_ = born_timestamp; }
+  void setBornTimestamp(std::chrono::system_clock::time_point born_timestamp) {
+    born_timestamp_ = born_timestamp;
+  }
 
   void setQueueOffset(std::int64_t offset);
 

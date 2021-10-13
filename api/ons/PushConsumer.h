@@ -1,7 +1,5 @@
 #pragma once
 
-#include "absl/strings/string_view.h"
-
 #include "MessageListener.h"
 
 namespace ons {
@@ -16,7 +14,7 @@ public:
 
   virtual void shutdown() = 0;
 
-  virtual void subscribe(absl::string_view topic, absl::string_view filter_expression) = 0;
+  virtual void subscribe(const std::string& topic, const std::string& filter_expression) = 0;
 
   virtual void registerMessageListener(MessageListener* listener) = 0;
 };

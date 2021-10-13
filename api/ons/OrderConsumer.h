@@ -1,6 +1,6 @@
 #pragma once
 
-#include "absl/strings/string_view.h"
+#include <string>
 
 #include "MessageOrderListener.h"
 
@@ -14,10 +14,9 @@ public:
 
   virtual void shutdown() = 0;
 
-  virtual void subscribe(absl::string_view topic,
-                         absl::string_view expression) = 0;
+  virtual void subscribe(const std::string& topic, const std::string& expression) = 0;
 
-  virtual void registerMessageListener(MessageOrderListener *listener) = 0;
+  virtual void registerMessageListener(MessageOrderListener* listener) = 0;
 };
 
 } // namespace ons

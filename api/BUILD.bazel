@@ -15,6 +15,5 @@ cc_library(
     strip_include_prefix = "//api",
     deps = [
         "@org_apache_rocketmq//api:rocketmq_interface",
-        "@com_google_absl//absl/strings",
     ],
 )

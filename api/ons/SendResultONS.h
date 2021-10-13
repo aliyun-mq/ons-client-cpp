@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 
-#include "absl/strings/string_view.h"
-
 #include "ONSClient.h"
 
 namespace ons {
@@ -24,7 +22,7 @@ public:
   operator bool() { return !message_id_.empty(); }
 
 protected:
-  void setMessageId(absl::string_view message_id);
+  void setMessageId(const std::string& message_id);
 
 private:
   std::string message_id_;

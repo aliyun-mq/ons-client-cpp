@@ -1,9 +1,11 @@
 #pragma once
 
-#include "ons/ONSFactoryAPI.h"
+#include <memory>
 
 #include "absl/base/thread_annotations.h"
 #include "absl/synchronization/mutex.h"
+
+#include "ons/ONSFactoryAPI.h"
 
 namespace ons {
 class ONSFactoryInstance : public ONSFactoryAPI {

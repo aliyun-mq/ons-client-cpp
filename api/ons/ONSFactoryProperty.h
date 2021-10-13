@@ -5,16 +5,12 @@
 #include <string>
 #include <vector>
 
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
-
 #include "MessageModel.h"
 #include "ONSChannel.h"
 #include "ONSClient.h"
 #include "Trace.h"
 
 namespace ons {
-
 class ONSCLIENT_API ONSFactoryProperty {
 public:
   ONSFactoryProperty(bool set_defaults = true);
@@ -34,7 +30,7 @@ public:
   ONSFactoryProperty& setOnsTraceSwitch(bool should_trace);
 
   void setOnsChannel(ONSChannel ons_channel);
-  void setFactoryProperty(absl::string_view key, absl::string_view value);
+  void setFactoryProperty(const std::string& key, const std::string& value);
   void setFactoryProperties(const std::map<std::string, std::string>& factory_properties);
   std::map<std::string, std::string> getFactoryProperties() const;
   std::string getProducerId() const;
@@ -120,9 +116,9 @@ protected:
 private:
   std::map<std::string, std::string> property_map_;
 
-  absl::optional<std::string> getProperty(absl::string_view key) const;
+  std::string getProperty(const std::string& key) const;
 
-  std::string getProperty(absl::string_view key, std::string default_value) const;
+  std::string getProperty(const std::string& key, std::string default_value) const;
 
   bool validate(const std::string& key, const std::string& value);
 

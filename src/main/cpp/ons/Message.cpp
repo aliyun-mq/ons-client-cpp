@@ -16,25 +16,25 @@ const char* SystemPropKey::MSGID = "__MSGID";
 const char* SystemPropKey::RECONSUMETIMES = "__RECONSUMETIMES";
 const char* SystemPropKey::STARTDELIVERTIME = "__STARTDELIVERTIME";
 
-Message::Message(absl::string_view topic, absl::string_view body) {
+Message::Message(const std::string& topic, const std::string& body) {
   topic_ = std::string(topic.data(), topic.length());
   body_ = std::string(body.data(), body.length());
 }
 
-Message::Message(absl::string_view topic, absl::string_view tag, absl::string_view body) : Message(topic, body) {
+Message::Message(const std::string& topic, const std::string& tag, const std::string& body) : Message(topic, body) {
   if (!tag.empty()) {
     setTag(tag);
   }
 }
 
-Message::Message(absl::string_view topic, absl::string_view tag, absl::string_view key, absl::string_view body)
+Message::Message(const std::string& topic, const std::string& tag, const std::string& key, const std::string& body)
     : Message(topic, tag, body) {
   if (!key.empty()) {
     attachKey(key);
   }
 }
 
-void Message::putUserProperty(absl::string_view key, absl::string_view value) {
+void Message::putUserProperty(const std::string& key, const std::string& value) {
   std::string k(key.data(), key.length());
   std::string v(value.data(), value.length());
 
@@ -48,7 +48,7 @@ void Message::putUserProperty(absl::string_view key, absl::string_view value) {
   user_properties_.insert({k, v});
 }
 
-std::string Message::getUserProperty(absl::string_view key) const {
+std::string Message::getUserProperty(const std::string& key) const {
   std::string k(key.data(), key.length());
   auto it = user_properties_.find(k);
   if (user_properties_.end() != it) {
@@ -67,7 +67,7 @@ std::map<std::string, std::string> Message::getUserProperties() const { return u
 
 std::string Message::getTopic() const { return topic_; }
 
-void Message::setTopic(absl::string_view topic) {
+void Message::setTopic(const std::string& topic) {
   if (topic.empty()) {
     return;
   }
@@ -76,7 +76,7 @@ void Message::setTopic(absl::string_view topic) {
 
 std::string Message::getTag() const { return tag_; }
 
-void Message::setTag(absl::string_view tag) {
+void Message::setTag(const std::string& tag) {
   if (tag.empty()) {
     return;
   }
@@ -86,7 +86,7 @@ void Message::setTag(absl::string_view tag) {
 
 std::string Message::getMsgID() const { return message_id_; }
 
-void Message::setMsgID(absl::string_view message_id) {
+void Message::setMsgID(const std::string& message_id) {
   if (message_id.empty()) {
     return;
   }
@@ -95,7 +95,7 @@ void Message::setMsgID(absl::string_view message_id) {
 
 std::vector<std::string> Message::getKeys() const { return keys_; }
 
-void Message::attachKey(absl::string_view key) {
+void Message::attachKey(const std::string& key) {
   if (key.empty()) {
     return;
   }
@@ -111,7 +111,7 @@ void Message::setStartDeliverTime(std::chrono::system_clock::time_point delivery
 
 std::string Message::getBody() const { return body_; }
 
-void Message::setBody(absl::string_view body) {
+void Message::setBody(const std::string& body) {
   if (body.empty()) {
     body_.clear();
     return;

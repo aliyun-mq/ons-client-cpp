@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "ONSConsumerAbstract.h"
 #include "OrderListenerWrapper.h"
@@ -21,7 +22,7 @@ public:
 
   void shutdown() override;
 
-  void subscribe(absl::string_view topic, absl::string_view subscribe_expression) override;
+  void subscribe(const std::string& topic, const std::string& subscribe_expression) override;
 
   void registerMessageListener(MessageOrderListener* listener) override;
 };

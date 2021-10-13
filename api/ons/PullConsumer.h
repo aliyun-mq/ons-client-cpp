@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "absl/strings/string_view.h"
-
 #include "MessageQueueONS.h"
 #include "ONSClientException.h"
 #include "PullResultONS.h"
@@ -25,7 +23,7 @@ public:
 
   virtual void fetchSubscribeMessageQueues(const std::string& topic, std::vector<MessageQueueONS>& mqs) = 0;
 
-  virtual PullResultONS pull(const MessageQueueONS& mq, absl::string_view expression, std::int64_t offset,
+  virtual PullResultONS pull(const MessageQueueONS& mq, const std::string& expression, std::int64_t offset,
                              std::int32_t batch_size) = 0;
 
   virtual std::int64_t searchOffset(const MessageQueueONS& mq, long long timestamp) = 0;

@@ -10,7 +10,7 @@ void OrderConsumerImpl::start() { ONSConsumerAbstract::start(); }
 
 void OrderConsumerImpl::shutdown() { ONSConsumerAbstract::shutdown(); }
 
-void OrderConsumerImpl::subscribe(absl::string_view topic, absl::string_view expression) {
+void OrderConsumerImpl::subscribe(const std::string& topic, const std::string& expression) {
   ONSConsumerAbstract::subscribe(topic, expression);
 }
 

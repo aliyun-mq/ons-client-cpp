@@ -1,5 +1,7 @@
 #include "ons/ONSEnvironmentVariableFactoryProperty.h"
+
 #include <cstdlib>
+#include <cstring>
 
 namespace ons {
 

@@ -6,14 +6,18 @@
 
 namespace ons {
 
-ConsumerImpl::ConsumerImpl(const ONSFactoryProperty& ons_factory_property)
-    : ONSConsumerAbstract(ons_factory_property) {}
+ConsumerImpl::ConsumerImpl(const ONSFactoryProperty& ons_factory_property) : ONSConsumerAbstract(ons_factory_property) {
+}
 
-void ConsumerImpl::start() { ONSConsumerAbstract::start(); }
+void ConsumerImpl::start() {
+  ONSConsumerAbstract::start();
+}
 
-void ConsumerImpl::shutdown() { ONSConsumerAbstract::shutdown(); }
+void ConsumerImpl::shutdown() {
+  ONSConsumerAbstract::shutdown();
+}
 
-void ConsumerImpl::subscribe(absl::string_view topic, absl::string_view sub_expression) {
+void ConsumerImpl::subscribe(const std::string& topic, const std::string& sub_expression) {
   if (topic.empty()) {
     THROW_ONS_EXCEPTION(ONSClientException, "Subscribed topic is null", OTHER_ERROR);
   }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "MessageListenerWrapper.h"
 #include "ONSConsumerAbstract.h"
 #include "absl/container/flat_hash_map.h"
@@ -18,7 +20,7 @@ public:
 
   void shutdown() override;
 
-  void subscribe(absl::string_view topic, absl::string_view sub_expression) override;
+  void subscribe(const std::string& topic, const std::string& sub_expression) override;
 
   void registerMessageListener(MessageListener* listener) override;
 };

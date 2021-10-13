@@ -7,6 +7,7 @@
 
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_join.h"
+#include "absl/types/optional.h"
 #include "ghc/filesystem.hpp"
 #include "google/protobuf/struct.pb.h"
 #include "google/protobuf/util/json_util.h"
@@ -145,8 +146,7 @@ bool ONSFactoryProperty::validate(const std::string& key, const std::string& val
 }
 
 std::string ONSFactoryProperty::getLogPath() const {
-  auto optional = getProperty(LogPath);
-  return optional.value_or(std::string());
+  return getProperty(LogPath);
 }
 
 ONSFactoryProperty& ONSFactoryProperty::setSendMsgTimeout(int value) {
@@ -177,13 +177,13 @@ ONSFactoryProperty& ONSFactoryProperty::setMaxMsgCacheSize(int value) {
 
 ONSFactoryProperty& ONSFactoryProperty::withTraceFeature(Trace trace_flag) {
   switch (trace_flag) {
-  case Trace::ON:
-    setFactoryProperty(OnsTraceSwitch, "true");
-    break;
+    case Trace::ON:
+      setFactoryProperty(OnsTraceSwitch, "true");
+      break;
 
-  case Trace::OFF:
-    setFactoryProperty(OnsTraceSwitch, "false");
-    break;
+    case Trace::OFF:
+      setFactoryProperty(OnsTraceSwitch, "false");
+      break;
   }
   return *this;
 }
@@ -215,7 +215,7 @@ void ONSFactoryProperty::setOnsChannel(ONSChannel channel) {
   }
 }
 
-void ONSFactoryProperty::setFactoryProperty(absl::string_view key, absl::string_view value) {
+void ONSFactoryProperty::setFactoryProperty(const std::string& key, const std::string& value) {
 
   std::string keyString(key.data(), key.length());
   std::string valueString(value.data(), value.length());
@@ -229,76 +229,86 @@ void ONSFactoryProperty::setFactoryProperty(absl::string_view key, absl::string_
   }
 }
 
-absl::optional<std::string> ONSFactoryProperty::getProperty(absl::string_view key) const {
+std::string ONSFactoryProperty::getProperty(const std::string& key) const {
   std::string k(key.data(), key.length());
   auto it = property_map_.find(k);
   if (property_map_.end() == it) {
-    return absl::optional<std::string>();
+    return std::string();
   }
-  return absl::make_optional<std::string>(it->second);
+  return it->second;
 }
 
-std::string ONSFactoryProperty::getProperty(absl::string_view key, std::string default_value) const {
-  return getProperty(key).value_or(std::move(default_value));
+std::string ONSFactoryProperty::getProperty(const std::string& key, std::string default_value) const {
+  auto&& value = getProperty(key);
+  if (value.empty()) {
+    return default_value;
+  }
+  return value;
 }
 
 void ONSFactoryProperty::setFactoryProperties(const std::map<std::string, std::string>& factory_properties) {
   property_map_ = factory_properties;
 }
 
-std::map<std::string, std::string> ONSFactoryProperty::getFactoryProperties() const { return property_map_; }
+std::map<std::string, std::string> ONSFactoryProperty::getFactoryProperties() const {
+  return property_map_;
+}
 
 std::string ONSFactoryProperty::getProducerId() const {
-  absl::optional<std::string> group_id = getProperty(GroupId);
-  if (group_id.has_value()) {
-    return group_id.value();
+  auto&& group_id = getProperty(GroupId);
+  if (!group_id.empty()) {
+    return group_id;
   }
 
   return getProperty(ProducerId, EMPTY_STRING);
 }
 
 std::string ONSFactoryProperty::getConsumerId() const {
-  absl::optional<std::string> group_id = getProperty(GroupId);
-  if (group_id.has_value()) {
-    return group_id.value();
+  auto&& group_id = getProperty(GroupId);
+  if (!group_id.empty()) {
+    return group_id;
   }
   return getProperty(ConsumerId, EMPTY_STRING);
 }
 
-std::string ONSFactoryProperty::getGroupId() const { return getProperty(GroupId, EMPTY_STRING); }
+std::string ONSFactoryProperty::getGroupId() const {
+  return getProperty(GroupId, EMPTY_STRING);
+}
 
-std::string ONSFactoryProperty::getMessageModel() const { return getProperty(MessageModel, EMPTY_STRING); }
+std::string ONSFactoryProperty::getMessageModel() const {
+  return getProperty(MessageModel, EMPTY_STRING);
+}
 
 ONSFactoryProperty& ONSFactoryProperty::setMessageModel(ons::MessageModel message_model) {
   switch (message_model) {
-  case MessageModel::CLUSTERING:
-    setFactoryProperty(MessageModel, CLUSTERING);
-    break;
+    case MessageModel::CLUSTERING:
+      setFactoryProperty(MessageModel, CLUSTERING);
+      break;
 
-  case MessageModel::BROADCASTING:
-    setFactoryProperty(MessageModel, BROADCASTING);
-    break;
+    case MessageModel::BROADCASTING:
+      setFactoryProperty(MessageModel, BROADCASTING);
+      break;
   }
   return *this;
 }
 
 std::chrono::milliseconds ONSFactoryProperty::getSendMsgTimeout() const {
-  absl::optional<std::string> timeout = getProperty(SendMsgTimeoutMillis);
-  if (timeout.has_value()) {
+  auto&& timeout = getProperty(SendMsgTimeoutMillis);
+  if (!timeout.empty()) {
     std::int32_t value;
-    if (absl::SimpleAtoi(timeout.value(), &value)) {
+    if (absl::SimpleAtoi(timeout, &value)) {
       return std::chrono::milliseconds(value);
     }
   }
 
-  return std::chrono::milliseconds(0);
+  return std::chrono::milliseconds(3000);
 }
 
 std::chrono::milliseconds ONSFactoryProperty::getSuspendTimeMillis() const {
-  absl::optional<std::string> interval = getProperty(SuspendTimeMillis);
-  if (interval.has_value()) {
+  auto&& interval = getProperty(SuspendTimeMillis);
+  if (!interval.empty()) {
     std::int32_t value;
-    if (absl::SimpleAtoi(interval.value(), &value)) {
+    if (absl::SimpleAtoi(interval, &value)) {
       return std::chrono::milliseconds(value);
     }
   }
@@ -374,15 +384,25 @@ ONSChannel ONSFactoryProperty::getOnsChannel() const {
   return ONSChannel::ALIYUN; // default value
 }
 
-std::string ONSFactoryProperty::getChannel() const { return getProperty(OnsChannel, DEFAULT_CHANNEL); }
+std::string ONSFactoryProperty::getChannel() const {
+  return getProperty(OnsChannel, DEFAULT_CHANNEL);
+}
 
-std::string ONSFactoryProperty::getNameSrvAddr() const { return getProperty(NAMESRV_ADDR, EMPTY_STRING); }
+std::string ONSFactoryProperty::getNameSrvAddr() const {
+  return getProperty(NAMESRV_ADDR, EMPTY_STRING);
+}
 
-std::string ONSFactoryProperty::getNameSrvDomain() const { return getProperty(ONSAddr, EMPTY_STRING); }
+std::string ONSFactoryProperty::getNameSrvDomain() const {
+  return getProperty(ONSAddr, EMPTY_STRING);
+}
 
-std::string ONSFactoryProperty::getAccessKey() const { return getProperty(AccessKey, EMPTY_STRING); }
+std::string ONSFactoryProperty::getAccessKey() const {
+  return getProperty(AccessKey, EMPTY_STRING);
+}
 
-std::string ONSFactoryProperty::getSecretKey() const { return getProperty(SecretKey, EMPTY_STRING); }
+std::string ONSFactoryProperty::getSecretKey() const {
+  return getProperty(SecretKey, EMPTY_STRING);
+}
 
 std::string ONSFactoryProperty::getConsumerInstanceName() const {
   return getProperty(ConsumerInstanceName, EMPTY_STRING);
@@ -393,15 +413,17 @@ bool ONSFactoryProperty::getOnsTraceSwitch() const {
   return "true" == value;
 }
 
-std::string ONSFactoryProperty::getInstanceId() const { return getProperty(InstanceId, EMPTY_STRING); }
+std::string ONSFactoryProperty::getInstanceId() const {
+  return getProperty(InstanceId, EMPTY_STRING);
+}
 
 ONSFactoryProperty::operator bool() {
   ONSChannel channel = getOnsChannel();
   switch (channel) {
-  case ONSChannel::ALIYUN:
-    return !getAccessKey().empty() && !getSecretKey().empty();
-  default:
-    return true;
+    case ONSChannel::ALIYUN:
+      return !getAccessKey().empty() && !getSecretKey().empty();
+    default:
+      return true;
   }
 }
 } // namespace ons
