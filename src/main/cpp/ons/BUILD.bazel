@@ -6,6 +6,7 @@ cc_library(
     deps = [
         "@org_apache_rocketmq//src/main/cpp/rocketmq:rocketmq_library",
         "//api:ons_interface",
+        "@com_google_absl//absl/strings:str_format",
     ],
     visibility = ["//visibility:public"],
     strip_include_prefix = "//src/main/cpp/ons/include",

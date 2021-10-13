@@ -1,0 +1,40 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar", "pkg_zip")
+load("//bazel:cc_combine.bzl", "cc_combine")
+
+cc_combine(
+    name = "libons",
+    genstatic = True,
+    output = "libons.a",
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ]
+)
+
+pkg_tar(
+    name = "ons-hdrs",
+    package_dir = "/include/ons",
+    srcs = [
+        "//api:ons_hdrs",
+    ],
+    mode = "0644",
+    stamp = 1,
+)
+
+pkg_tar(
+    name = "ons-lib",
+    package_dir = "/lib",
+    srcs = [
+        ":libons",
+    ],
+    mode = "0644",
+    stamp = 1,
+)
+
+pkg_tar(
+    name = "ons-dist",
+    extension = "tar.gz",
+    deps = [
+        ":ons-hdrs",
+        ":ons-lib",
+    ],
+)
