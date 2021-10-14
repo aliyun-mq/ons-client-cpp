@@ -30,23 +30,33 @@ def _combine_impl(ctx):
             processed_path_list.append(dep.path)
         cp_command += "echo 'starting to run shell'"
         processed_path_list.append(output.path)
-  
         ctx.actions.run_shell(
             outputs = processed_list,
             inputs = target_list,
             command = cp_command,
         )
 
-        command = "cd {} && ar -x {} {}".format(
-                output.dirname,
-                " && ar -x ".join([dep.basename for dep in target_list]),
-                " && ar -qc {} *.o".format(output.basename)
-                )
-        
-        print("command = {}".format(command))
+        inflate_list = []
+        inflate_command = "cd {} && ".format(output.dirname)
+        for archive in processed_list:
+            dir_name = archive.basename.rstrip(".a") + "_inflate"
+            inflate_dir = ctx.actions.declare_directory(dir_name)                        
+            inflate_list.append(inflate_dir)
+            inflate_path = output.dirname + "/" + dir_name
+            inflate_command += " cd {} && {} -x ../{} && cd .. && ".format(dir_name, cc_toolchain.ar_executable, archive.basename)
+        inflate_command += "echo 'Create inflate directories'"
+        ctx.actions.run_shell(
+            outputs = inflate_list,
+            inputs = processed_list,
+            command = inflate_command,
+        )
+
+        command = "cd {} && {} -qc {} ".format(output.dirname, cc_toolchain.ar_executable, output.basename)
+        for item in inflate_list:
+            command += " {}/*.o ".format(item.basename)
         ctx.actions.run_shell(
             outputs = [output],
-            inputs = processed_list,
+            inputs = inflate_list,
             command = command,
         )
     else:
