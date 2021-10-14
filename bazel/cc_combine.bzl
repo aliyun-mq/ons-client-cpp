@@ -22,41 +22,36 @@ def _combine_impl(ctx):
     if ctx.attr.genstatic:
         cp_command  = ""       
         processed_list = []
-        processed_path_list = []
         for dep in target_list:
-            cp_command += "cp -a " + dep.path + " " + output.dirname + "/ && "
-            processed = ctx.actions.declare_file(dep.basename)
+            target_file_name = dep.basename.replace("+", "p")
+            cp_command += "cp -a {} {}/{} && ".format(dep.path, output.dirname, target_file_name)
+            processed = ctx.actions.declare_file(target_file_name)
             processed_list.append(processed)
-            processed_path_list.append(dep.path)
         cp_command += "echo 'starting to run shell'"
-        processed_path_list.append(output.path)
         ctx.actions.run_shell(
             outputs = processed_list,
             inputs = target_list,
             command = cp_command,
         )
 
-        inflate_list = []
-        inflate_command = "cd {} && ".format(output.dirname)
-        for archive in processed_list:
-            dir_name = archive.basename.rstrip(".a") + "_inflate"
-            inflate_dir = ctx.actions.declare_directory(dir_name)                        
-            inflate_list.append(inflate_dir)
-            inflate_path = output.dirname + "/" + dir_name
-            inflate_command += " cd {} && {} -x ../{} && cd .. && ".format(dir_name, cc_toolchain.ar_executable, archive.basename)
-        inflate_command += "echo 'Create inflate directories'"
-        ctx.actions.run_shell(
-            outputs = inflate_list,
-            inputs = processed_list,
-            command = inflate_command,
+        script = "create {}\n".format(output.basename)
+        for item in processed_list:
+            script += "addlib {}\n".format(item.basename)
+        script += "save\n"
+        script += "end\n"
+
+        file_name_mri = output.basename.rstrip(".a") + ".mri"
+        mri_file = ctx.actions.declare_file(file_name_mri)
+        ctx.actions.write(
+            output = mri_file,
+            content = script,
+            is_executable = False,
         )
 
-        command = "cd {} && {} -qc {} ".format(output.dirname, cc_toolchain.ar_executable, output.basename)
-        for item in inflate_list:
-            command += " {}/*.o ".format(item.basename)
+        command = "cd {} && {} -M < {}".format(output.dirname, cc_toolchain.ar_executable, mri_file.basename)
         ctx.actions.run_shell(
             outputs = [output],
-            inputs = inflate_list,
+            inputs = processed_list + [mri_file],
             command = command,
         )
     else:
