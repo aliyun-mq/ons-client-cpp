@@ -3,11 +3,12 @@
 #include "AccessPoint.h"
 #include "gtest/gtest.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class AccessPointTest : public testing::Test {
 public:
-  AccessPointTest() : access_point_(endpoint_) {}
+  AccessPointTest() : access_point_(endpoint_) {
+  }
 
 protected:
   std::string endpoint_{"http://MQ_INST_1322518017229982_BAA4lS3a.cn-shanghai.mq-internal.aliyuncs.com:8080"};
@@ -31,4 +32,4 @@ TEST_F(AccessPointTest, testNameServerAddress) {
   ASSERT_EQ(expected, access_point_.nameServerAddress());
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

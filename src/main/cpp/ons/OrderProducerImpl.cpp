@@ -6,7 +6,7 @@
 #include "rocketmq/MQMessage.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 OrderProducerImpl::OrderProducerImpl(const ONSFactoryProperty& factory_property)
     : ONSClientAbstract(factory_property), producer_(factory_property.getGroupId()) {
@@ -41,9 +41,13 @@ OrderProducerImpl::OrderProducerImpl(const ONSFactoryProperty& factory_property)
   }
 }
 
-void OrderProducerImpl::start() { producer_.start(); }
+void OrderProducerImpl::start() {
+  producer_.start();
+}
 
-void OrderProducerImpl::shutdown() { producer_.shutdown(); }
+void OrderProducerImpl::shutdown() {
+  producer_.shutdown();
+}
 
 SendResultONS OrderProducerImpl::send(Message& msg, std::string message_group) {
   ROCKETMQ_NAMESPACE::MQMessage message = ons::ONSUtil::get().msgConvert(msg);
@@ -53,4 +57,4 @@ SendResultONS OrderProducerImpl::send(Message& msg, std::string message_group) {
   return ons_send_result;
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

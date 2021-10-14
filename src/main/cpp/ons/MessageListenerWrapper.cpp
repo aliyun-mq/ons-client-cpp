@@ -3,10 +3,11 @@
 #include "ons/ConsumeContext.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 MessageListenerWrapper::MessageListenerWrapper(ons::MessageListener* message_listener)
-    : message_listener_(message_listener) {}
+    : message_listener_(message_listener) {
+}
 
 ROCKETMQ_NAMESPACE::ConsumeMessageResult
 MessageListenerWrapper::consumeMessage(const std::vector<ROCKETMQ_NAMESPACE::MQMessageExt>& msgs) {
@@ -17,13 +18,13 @@ MessageListenerWrapper::consumeMessage(const std::vector<ROCKETMQ_NAMESPACE::MQM
   Action action = message_listener_->consume(message, consume_context);
 
   switch (action) {
-  case Action::CommitMessage:
-    return ROCKETMQ_NAMESPACE::ConsumeMessageResult::SUCCESS;
+    case Action::CommitMessage:
+      return ROCKETMQ_NAMESPACE::ConsumeMessageResult::SUCCESS;
 
-  case Action::ReconsumeLater:
-  default:
-    return ROCKETMQ_NAMESPACE::ConsumeMessageResult::FAILURE;
+    case Action::ReconsumeLater:
+    default:
+      return ROCKETMQ_NAMESPACE::ConsumeMessageResult::FAILURE;
   }
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

@@ -10,7 +10,7 @@
 
 #include "rocketmq/DefaultMQPushConsumer.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class OrderConsumerImpl : public OrderConsumer, public ONSConsumerAbstract {
 public:
@@ -27,4 +27,4 @@ public:
   void registerMessageListener(MessageOrderListener* listener) override;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

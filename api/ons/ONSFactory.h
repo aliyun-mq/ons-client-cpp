@@ -2,7 +2,7 @@
 
 #include "ONSFactoryAPI.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API ONSFactory {
 public:
@@ -13,4 +13,4 @@ public:
   static ONSFactoryAPI* getInstance();
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

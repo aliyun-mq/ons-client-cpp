@@ -2,9 +2,12 @@
 
 #include <cstdint>
 
-namespace ons {
+#include "ONSClient.h"
 
-enum class ONSPullStatus : uint8_t {
+ONS_NAMESPACE_BEGIN
+
+enum class ONSPullStatus : uint8_t
+{
   ONS_FOUND = 0,
   ONS_NO_NEW_MSG = 1,
   ONS_NO_MATCHED_MSG = 2,
@@ -12,4 +15,4 @@ enum class ONSPullStatus : uint8_t {
   ONS_BROKER_TIMEOUT = 3, // indicate pull request timeout without receiving valid response
 };
 
-}
+ONS_NAMESPACE_END

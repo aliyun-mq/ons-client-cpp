@@ -3,13 +3,13 @@
 #include "Message.h"
 #include "MessageQueueONS.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class MessageQueueSelectorONS {
 public:
   virtual ~MessageQueueSelectorONS() = default;
-  
+
   virtual MessageQueueONS select(const std::vector<MessageQueueONS>& mqs, const Message& msg, void* arg) = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

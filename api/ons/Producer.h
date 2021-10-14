@@ -8,7 +8,7 @@
 #include "ONSClientException.h"
 #include "SendResultONS.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API Producer {
 public:
@@ -58,4 +58,4 @@ public:
   virtual void sendOneway(Message& message) noexcept = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

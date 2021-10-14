@@ -4,7 +4,7 @@
 
 #include "MessageListenerWrapper.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ConsumerImpl::ConsumerImpl(const ONSFactoryProperty& ons_factory_property) : ONSConsumerAbstract(ons_factory_property) {
 }
@@ -38,4 +38,4 @@ void ConsumerImpl::registerMessageListener(MessageListener* listener) {
   ONSConsumerAbstract::registerMessageListener(std::move(message_listener));
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

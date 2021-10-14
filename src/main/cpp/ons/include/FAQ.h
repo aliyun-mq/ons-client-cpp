@@ -3,7 +3,9 @@
 #include <sstream>
 #include <string>
 
-namespace ons {
+#include "ons/ONSClient.h"
+
+ONS_NAMESPACE_BEGIN
 
 class FAQ {
 public:
@@ -24,4 +26,5 @@ public:
     return ss.str();
   }
 };
-} // namespace ons
+
+ONS_NAMESPACE_END

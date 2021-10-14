@@ -1,18 +1,31 @@
 #include "ons/MessageQueueONS.h"
 #include "ons/ONSClientException.h"
 
-namespace ons {
-std::string MessageQueueONS::getTopic() const { return topic_; }
+ONS_NAMESPACE_BEGIN
 
-void MessageQueueONS::setTopic(const std::string& topic) { topic_ = topic; }
+std::string MessageQueueONS::getTopic() const {
+  return topic_;
+}
 
-std::string MessageQueueONS::getBrokerName() const { return broker_name_; }
+void MessageQueueONS::setTopic(const std::string& topic) {
+  topic_ = topic;
+}
 
-void MessageQueueONS::setBrokerName(const std::string& broker_name) { broker_name_ = broker_name; }
+std::string MessageQueueONS::getBrokerName() const {
+  return broker_name_;
+}
 
-int MessageQueueONS::getQueueId() const { return queue_id_; }
+void MessageQueueONS::setBrokerName(const std::string& broker_name) {
+  broker_name_ = broker_name;
+}
 
-void MessageQueueONS::setQueueId(int queue_id) { queue_id_ = queue_id; }
+int MessageQueueONS::getQueueId() const {
+  return queue_id_;
+}
+
+void MessageQueueONS::setQueueId(int queue_id) {
+  queue_id_ = queue_id;
+}
 
 bool MessageQueueONS::operator==(const MessageQueueONS& mq) const {
   if (this == &mq) {
@@ -48,6 +61,8 @@ int MessageQueueONS::compareTo(const MessageQueueONS& mq) const {
   return queue_id_ - mq.queue_id_;
 }
 
-bool MessageQueueONS::operator<(const MessageQueueONS& mq) const { return compareTo(mq) < 0; }
+bool MessageQueueONS::operator<(const MessageQueueONS& mq) const {
+  return compareTo(mq) < 0;
+}
 
-} // namespace ons
+ONS_NAMESPACE_END

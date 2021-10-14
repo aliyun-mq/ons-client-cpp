@@ -9,7 +9,7 @@
 #include "ons/ONSErrorCode.h"
 #include "rocketmq/MQMessageQueue.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ROCKETMQ_NAMESPACE::MQMessageQueue ONSMessageQueueSelector::select(const std::vector<rocketmq::MQMessageQueue>& mqs,
                                                                    const rocketmq::MQMessage& msg, void* arg) {
@@ -30,4 +30,4 @@ ROCKETMQ_NAMESPACE::MQMessageQueue ONSMessageQueueSelector::select(const std::ve
   return mqs[remainder];
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

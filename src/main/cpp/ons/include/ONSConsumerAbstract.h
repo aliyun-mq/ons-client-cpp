@@ -7,7 +7,7 @@
 #include "rocketmq/MessageListener.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSConsumerAbstract : public ONSClientAbstract {
 public:
@@ -27,4 +27,4 @@ protected:
   std::unique_ptr<ROCKETMQ_NAMESPACE::MessageListener> message_listener_;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

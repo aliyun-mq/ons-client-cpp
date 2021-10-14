@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ONSEnvironmentVariableFactoryProperty::ONSEnvironmentVariableFactoryProperty() {
   setDefaults();
@@ -32,4 +32,4 @@ void ONSEnvironmentVariableFactoryProperty::parseEnvironmentVariables() {
   }
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

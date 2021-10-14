@@ -4,7 +4,7 @@
 
 #include "MessageOrderListener.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API OrderConsumer {
 public:
@@ -19,4 +19,4 @@ public:
   virtual void registerMessageListener(MessageOrderListener* listener) = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

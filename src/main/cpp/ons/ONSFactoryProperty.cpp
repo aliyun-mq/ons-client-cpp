@@ -17,7 +17,7 @@
 #include "MixAll.h"
 #include "ons/ONSClientException.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 const char* ONSFactoryProperty::LogPath = "LogPath";
 const char* ONSFactoryProperty::ProducerId = "ProducerId";
@@ -426,4 +426,5 @@ ONSFactoryProperty::operator bool() {
       return true;
   }
 }
-} // namespace ons
+
+ONS_NAMESPACE_END

@@ -2,7 +2,7 @@
 
 #include "MessageListener.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API PushConsumer {
 public:
@@ -19,4 +19,4 @@ public:
   virtual void registerMessageListener(MessageListener* listener) = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

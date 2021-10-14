@@ -13,7 +13,7 @@
 #include "PushConsumer.h"
 #include "TransactionProducer.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API ONSFactoryAPI {
 public:
@@ -33,4 +33,4 @@ public:
   virtual PushConsumer* createPushConsumer(ONSFactoryProperty& factory_properties) = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

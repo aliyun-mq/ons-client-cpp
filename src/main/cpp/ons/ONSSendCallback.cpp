@@ -1,9 +1,9 @@
 #include "ONSSendCallback.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 absl::Mutex ONSSendCallback::mutex_;
 
 ONSSendCallback* ONSSendCallback::instance_ = nullptr;
 
-} // namespace ons
+ONS_NAMESPACE_END

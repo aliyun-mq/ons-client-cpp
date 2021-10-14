@@ -5,7 +5,7 @@
 #include "rocketmq/Logger.h"
 #include "spdlog/spdlog.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ONSConsumerAbstract::ONSConsumerAbstract(const ONSFactoryProperty& factory_property)
     : ONSClientAbstract(factory_property), consumer_(factory_property.getConsumerId()) {
@@ -61,4 +61,4 @@ void ONSConsumerAbstract::registerMessageListener(
   SPDLOG_INFO("Message listener registered");
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

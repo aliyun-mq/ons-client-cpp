@@ -2,11 +2,11 @@
 
 #include "ONSClient.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API ConsumeContext {
 public:
   virtual ~ConsumeContext() = default;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

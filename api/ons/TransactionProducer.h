@@ -4,7 +4,8 @@
 #include "ONSClient.h"
 #include "SendResultONS.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 class ONSCLIENT_API TransactionProducer {
 public:
   virtual ~TransactionProducer() = default;
@@ -20,4 +21,5 @@ public:
   // success;
   virtual SendResultONS send(Message& msg, LocalTransactionExecuter* executor) noexcept(false) = 0;
 };
-} // namespace ons
+
+ONS_NAMESPACE_END

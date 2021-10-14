@@ -3,7 +3,7 @@
 #include "Message.h"
 #include "TransactionStatus.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 class LocalTransactionExecutor {
 public:
   virtual ~LocalTransactionExecutor() = default;
@@ -14,4 +14,4 @@ public:
 // Keep API compatible
 using LocalTransactionExecuter = LocalTransactionExecutor;
 
-} // namespace ons
+ONS_NAMESPACE_END

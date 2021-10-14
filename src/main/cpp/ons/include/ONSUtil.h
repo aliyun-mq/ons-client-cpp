@@ -8,7 +8,7 @@
 #include "rocketmq/RocketMQ.h"
 #include "spdlog/spdlog.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSUtil {
 public:
@@ -38,4 +38,4 @@ private:
   absl::flat_hash_set<std::string> reserved_key_set_ext_;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

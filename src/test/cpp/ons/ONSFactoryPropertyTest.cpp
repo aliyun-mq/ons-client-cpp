@@ -1,7 +1,7 @@
 #include "ons/ONSFactoryProperty.h"
 #include "gtest/gtest.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSFactoryPropertyTest : public testing::Test {
 public:
@@ -22,4 +22,4 @@ TEST_F(ONSFactoryPropertyTest, testGroupId) {
   EXPECT_EQ(group_id_, factory_property_.getProducerId());
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

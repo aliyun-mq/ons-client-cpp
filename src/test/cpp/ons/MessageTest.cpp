@@ -3,7 +3,7 @@
 #include "Message.h"
 #include "gtest/gtest.h"
 
-using namespace ons;
+ONS_NAMESPACE_BEGIN
 
 TEST(MessageTest, testCtor) {
   Message message;
@@ -26,3 +26,5 @@ TEST(MessageTest, testCtor2) {
   EXPECT_EQ(1, message.getSystemProperties().size());
   EXPECT_STREQ(tag.c_str(), message.getSystemProperties(SystemPropKey::TAG));
 }
+
+ONS_NAMESPACE_END

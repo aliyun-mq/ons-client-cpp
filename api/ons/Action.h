@@ -4,8 +4,11 @@
 
 #include "ONSClient.h"
 
+ONS_NAMESPACE_BEGIN
+
 // consuming result
-enum class Action : std::int8_t {
+enum class Action : std::int8_t
+{
   // consume success, application could continue to consume next message
   CommitMessage = 0,
 
@@ -13,3 +16,5 @@ enum class Action : std::int8_t {
   // continue to consume next message
   ReconsumeLater = 1,
 };
+
+ONS_NAMESPACE_END

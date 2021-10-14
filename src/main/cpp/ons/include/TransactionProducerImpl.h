@@ -6,7 +6,7 @@
 #include "ons/ONSFactory.h"
 #include "rocketmq/DefaultMQProducer.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class TransactionProducerImpl : public TransactionProducer, public ONSClientAbstract {
 public:
@@ -24,4 +24,4 @@ private:
   ROCKETMQ_NAMESPACE::DefaultMQProducer producer_;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

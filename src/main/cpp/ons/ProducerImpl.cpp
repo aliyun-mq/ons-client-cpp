@@ -11,7 +11,7 @@
 #include "rocketmq/CredentialsProvider.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ProducerImpl::ProducerImpl(const ONSFactoryProperty& factory_property)
     : ONSClientAbstract(factory_property), producer_(std::string(factory_property.getProducerId())) {
@@ -108,4 +108,4 @@ ROCKETMQ_NAMESPACE::MQMessageQueue ProducerImpl::messageQueueConvert(const Messa
   return mq_message_queue;
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

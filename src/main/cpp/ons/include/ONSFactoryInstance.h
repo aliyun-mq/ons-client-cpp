@@ -7,7 +7,8 @@
 
 #include "ons/ONSFactoryAPI.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 class ONSFactoryInstance : public ONSFactoryAPI {
 public:
   ONSFactoryInstance() = default;
@@ -49,4 +50,5 @@ private:
   std::vector<std::shared_ptr<OrderConsumer>> order_consumer_table_ GUARDED_BY(order_consumer_table_mtx_);
   absl::Mutex order_consumer_table_mtx_;
 };
-} // namespace ons
+
+ONS_NAMESPACE_END

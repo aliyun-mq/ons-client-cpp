@@ -2,7 +2,8 @@
 #include "rocketmq/Logger.h"
 #include "spdlog/spdlog.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 bool InstanceUtil::validateInstanceEndpoint(const std::string& endpoint) {
   size_t position = endpoint.find(MISC_HEAD);
   if (position == 0) {
@@ -32,4 +33,4 @@ bool InstanceUtil::validateNameSrvAddr(const std::string& name_server_address) {
   return false;
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

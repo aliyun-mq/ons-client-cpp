@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 SendResultONS::SendResultONS() = default;
 
@@ -16,4 +16,4 @@ const std::string& SendResultONS::getMessageId() const {
   return message_id_;
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

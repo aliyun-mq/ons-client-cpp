@@ -8,7 +8,7 @@
 #include "ons/OrderAction.h"
 #include "rocketmq/MessageListener.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class OrderListenerWrapper : public ROCKETMQ_NAMESPACE::FifoMessageListener {
 public:
@@ -21,13 +21,13 @@ public:
     ConsumeOrderContext context;
     OrderAction action = wrapped_listener_->consume(message, context);
     switch (action) {
-    case OrderAction::Success:
-      return ROCKETMQ_NAMESPACE::ConsumeMessageResult::SUCCESS;
+      case OrderAction::Success:
+        return ROCKETMQ_NAMESPACE::ConsumeMessageResult::SUCCESS;
 
-    case OrderAction::Suspend:
-      return ROCKETMQ_NAMESPACE::ConsumeMessageResult::FAILURE;
-    default:
-      return ROCKETMQ_NAMESPACE::ConsumeMessageResult::SUCCESS;
+      case OrderAction::Suspend:
+        return ROCKETMQ_NAMESPACE::ConsumeMessageResult::FAILURE;
+      default:
+        return ROCKETMQ_NAMESPACE::ConsumeMessageResult::SUCCESS;
     }
   }
 
@@ -35,4 +35,4 @@ private:
   MessageOrderListener* wrapped_listener_;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

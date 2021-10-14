@@ -6,7 +6,7 @@
 #include "Protocol.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ONSUtil::ONSUtil() {
   reserved_key_set_ext_.insert(SystemPropKey::TAG);
@@ -116,4 +116,4 @@ ROCKETMQ_NAMESPACE::MQMessage ONSUtil::msgConvert(const Message& msg) {
   return message;
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

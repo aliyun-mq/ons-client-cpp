@@ -3,7 +3,7 @@
 #include "rocketmq/Logger.h"
 #include "spdlog/spdlog.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 // TODO: set AccessKey and SecretKey here.
 ONSClientAbstract::ONSClientAbstract(const ONSFactoryProperty& factory_property)
@@ -16,4 +16,4 @@ void ONSClientAbstract::shutdown() {}
 // TODO: not yet implemented.
 std::string ONSClientAbstract::buildInstanceName() { return "DefaultInstanceName"; }
 
-} // namespace ons
+ONS_NAMESPACE_END

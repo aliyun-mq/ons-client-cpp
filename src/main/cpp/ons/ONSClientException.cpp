@@ -1,7 +1,7 @@
 #include "ons/ONSClientException.h"
 #include <utility>
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ONSClientException::ONSClientException(std::string msg, int error) noexcept : msg_(std::move(msg)), error_(error) {}
 
@@ -16,4 +16,4 @@ const char* ONSClientException::GetMsg() const noexcept { return msg_.c_str(); }
 
 int ONSClientException::GetError() const noexcept { return error_; }
 
-} // namespace ons
+ONS_NAMESPACE_END

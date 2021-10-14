@@ -3,7 +3,7 @@
 
 #include "ONSClient.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class SendCallbackONSWrapper;
 class ONSSendCallback;
@@ -17,9 +17,11 @@ public:
 
   virtual ~SendResultONS();
 
-  const std::string &getMessageId() const;
+  const std::string& getMessageId() const;
 
-  operator bool() { return !message_id_.empty(); }
+  operator bool() {
+    return !message_id_.empty();
+  }
 
 protected:
   void setMessageId(const std::string& message_id);
@@ -34,4 +36,4 @@ private:
   friend class TransactionProducerImpl;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

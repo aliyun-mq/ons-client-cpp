@@ -1,7 +1,7 @@
 #include "OrderConsumerImpl.h"
 #include "OrderListenerWrapper.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 OrderConsumerImpl::OrderConsumerImpl(const ONSFactoryProperty& factory_property)
     : ONSConsumerAbstract(factory_property) {}
@@ -20,4 +20,4 @@ void OrderConsumerImpl::registerMessageListener(MessageOrderListener* listener) 
   ONSConsumerAbstract::registerMessageListener(std::move(wrapped_listener));
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

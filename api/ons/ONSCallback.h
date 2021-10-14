@@ -3,7 +3,8 @@
 #include "ONSClientException.h"
 #include "SendResultONS.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 class SendCallbackONS {
 public:
   virtual ~SendCallbackONS() = default;
@@ -13,4 +14,4 @@ public:
   virtual void onException(ONSClientException& e) = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

@@ -2,7 +2,7 @@
 #include "SendCallbackONSWrapper.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 SendCallbackONSWrapper::SendCallbackONSWrapper(SendCallbackONS* send_callback_ons_ptr)
     : send_callback_ons_ptr_(send_callback_ons_ptr) {
@@ -26,4 +26,4 @@ void SendCallbackONSWrapper::onFailure(const std::error_code& ec) noexcept {
   send_callback_ons_ptr_->onException(ons_client_exception);
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

@@ -11,7 +11,7 @@
 #include "rocketmq/MQClientException.h"
 #include "rocketmq/SendResult.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSSendCallback : public ROCKETMQ_NAMESPACE::SendCallback {
 
@@ -56,4 +56,4 @@ private:
   static ONSSendCallback* instance_;
 };
 
-} // end of namespace  ons
+ONS_NAMESPACE_END

@@ -2,11 +2,11 @@
 
 #include "ONSClient.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API ConsumeOrderContext {
 public:
   virtual ~ConsumeOrderContext() = default;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

@@ -6,7 +6,8 @@
 #include "rocketmq/AsyncCallback.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 class SendCallbackONSWrapper : public ROCKETMQ_NAMESPACE::SendCallback {
 public:
   explicit SendCallbackONSWrapper(SendCallbackONS* callback);
@@ -19,4 +20,4 @@ private:
   SendCallbackONS* send_callback_ons_ptr_{};
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

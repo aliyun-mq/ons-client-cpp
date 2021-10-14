@@ -2,9 +2,12 @@
 
 #include <cstdint>
 
-namespace ons {
+#include "ONSClient.h"
 
-enum class ONSChannel : uint8_t {
+ONS_NAMESPACE_BEGIN
+
+enum class ONSChannel : uint8_t
+{
   CLOUD = 0,
   ALIYUN = 1,
   ALL = 2,
@@ -12,4 +15,4 @@ enum class ONSChannel : uint8_t {
   INNER = 4,
 };
 
-}
+ONS_NAMESPACE_END

@@ -3,7 +3,7 @@
 #include "ONSUtil.h"
 #include <string>
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 const std::string INSTANCE_PREFIX = "MQ_INST_";
 static const std::string ENDPOINT_PREFIX = "http://";
@@ -21,4 +21,4 @@ public:
   static bool validateNameSrvAddr(const std::string& nameServerAddr);
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

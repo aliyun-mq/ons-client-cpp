@@ -4,14 +4,17 @@
 #include <sstream>
 #include <string>
 
-namespace ons {
+#include "ONSClient.h"
+
+ONS_NAMESPACE_BEGIN
 
 class MessageQueueONS {
 public:
   MessageQueueONS() = default;
 
   MessageQueueONS(std::string topic, std::string broker_name, int queue_id)
-      : topic_(std::move(topic)), broker_name_(std::move(broker_name)), queue_id_(queue_id) {}
+      : topic_(std::move(topic)), broker_name_(std::move(broker_name)), queue_id_(queue_id) {
+  }
 
   std::string getTopic() const;
   void setTopic(const std::string& topic);
@@ -32,4 +35,4 @@ private:
   int queue_id_{-1};
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include "Message.h"
 #include "TransactionStatus.h"
 
-namespace ons {
-
+ONS_NAMESPACE_BEGIN
 class LocalTransactionChecker {
 public:
   virtual ~LocalTransactionChecker() = default;
@@ -12,4 +11,4 @@ public:
   virtual TransactionStatus check(const Message& msg) noexcept = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

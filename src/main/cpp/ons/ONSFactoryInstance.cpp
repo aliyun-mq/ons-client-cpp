@@ -12,7 +12,7 @@
 #include "ons/ONSClientException.h"
 #include "ons/ONSFactory.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 Producer* ONSFactoryInstance::createProducer(ONSFactoryProperty& factory_properties) {
   if (ONSChannel::INNER == factory_properties.getOnsChannel()) {
@@ -134,4 +134,4 @@ PushConsumer* ONSFactoryInstance::createPushConsumer(ONSFactoryProperty& factory
   return consumer.get();
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

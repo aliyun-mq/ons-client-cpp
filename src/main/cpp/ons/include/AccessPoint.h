@@ -9,7 +9,9 @@
 
 #include "spdlog/spdlog.h"
 
-namespace ons {
+#include "ons/ONSClient.h"
+
+ONS_NAMESPACE_BEGIN
 
 class AccessPoint {
 public:
@@ -33,4 +35,4 @@ private:
   static const char* PREFIX;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

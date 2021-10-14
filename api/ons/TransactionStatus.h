@@ -2,12 +2,15 @@
 
 #include <cstdint>
 
-namespace ons {
+#include "ONSClient.h"
 
-enum class TransactionStatus : std::uint8_t {
+ONS_NAMESPACE_BEGIN
+
+enum class TransactionStatus : std::uint8_t
+{
   CommitTransaction = 0,
   RollbackTransaction = 1,
   Unknow = 2,
 };
 
-}
+ONS_NAMESPACE_END

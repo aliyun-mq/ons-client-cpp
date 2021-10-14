@@ -4,7 +4,9 @@
 #include "rocketmq/MQSelector.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+#include "ons/ONSClient.h"
+
+ONS_NAMESPACE_BEGIN
 
 class ONSMessageQueueSelector : public ROCKETMQ_NAMESPACE::MessageQueueSelector {
 public:
@@ -12,4 +14,4 @@ public:
                                             const ROCKETMQ_NAMESPACE::MQMessage& msg, void* arg) override;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

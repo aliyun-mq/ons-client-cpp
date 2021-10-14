@@ -2,11 +2,11 @@
 
 #include "ONSFactoryInstance.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 ONSFactoryAPI* ONSFactory::getInstance() {
   static ONSFactoryInstance instance_;
   return &instance_;
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

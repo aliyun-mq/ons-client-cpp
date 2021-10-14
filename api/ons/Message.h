@@ -10,8 +10,7 @@
 
 #include "ONSClient.h"
 
-namespace ons {
-
+ONS_NAMESPACE_BEGIN
 class SystemPropKey {
 public:
   SystemPropKey() = default;
@@ -112,4 +111,4 @@ private:
   std::int32_t reconsume_times_{0};
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

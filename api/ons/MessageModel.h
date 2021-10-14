@@ -2,11 +2,14 @@
 
 #include <cstdint>
 
-namespace ons {
+#include "ONSClient.h"
 
-enum class MessageModel : std::uint8_t {
+ONS_NAMESPACE_BEGIN
+
+enum class MessageModel : std::uint8_t
+{
   CLUSTERING = 0,
   BROADCASTING = 1,
 };
 
-}
+ONS_NAMESPACE_END

@@ -4,7 +4,7 @@
 #include "Message.h"
 #include "OrderAction.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class MessageOrderListener {
 public:
@@ -12,4 +12,5 @@ public:
 
   virtual OrderAction consume(const Message& message, const ConsumeOrderContext& context) noexcept = 0;
 };
-} // namespace ons
+
+ONS_NAMESPACE_END

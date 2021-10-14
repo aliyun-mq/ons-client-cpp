@@ -4,7 +4,7 @@
 #include "rocketmq/MessageListener.h"
 #include "rocketmq/RocketMQ.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class MessageListenerWrapper : public ROCKETMQ_NAMESPACE::StandardMessageListener {
 
@@ -18,4 +18,4 @@ private:
   ons::MessageListener* message_listener_{nullptr};
 };
 
-}; // namespace ons
+ONS_NAMESPACE_END

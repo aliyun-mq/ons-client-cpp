@@ -3,7 +3,8 @@
 #include <cstdlib>
 #include <string>
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 
 class ONSEnvironmentVariableFactoryPropertyTest : public testing::Test {
 public:
@@ -33,4 +34,4 @@ TEST_F(ONSEnvironmentVariableFactoryPropertyTest, testEnvironment) {
   EXPECT_EQ(name_server_addr_, factory_property_.getNameSrvAddr());
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

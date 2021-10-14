@@ -3,7 +3,7 @@
 #include "Message.h"
 #include "SendResultONS.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API OrderProducer {
 public:
@@ -35,4 +35,4 @@ public:
   virtual SendResultONS send(Message& message, std::string message_group) noexcept(false) = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

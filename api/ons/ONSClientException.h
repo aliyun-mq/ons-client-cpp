@@ -6,7 +6,7 @@
 #include "ONSClient.h"
 #include "ONSErrorCode.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API ONSClientException : public std::exception {
 public:
@@ -25,4 +25,5 @@ private:
 };
 
 #define THROW_ONS_EXCEPTION(e, msg, code) throw e(msg, code)
-} // namespace ons
+
+ONS_NAMESPACE_END

@@ -8,7 +8,7 @@
 #include "absl/strings/str_join.h"
 #include "absl/time/time.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 const char* SystemPropKey::TAG = "__TAG";
 const char* SystemPropKey::KEY_SEPARATOR = " ";
@@ -63,9 +63,13 @@ void Message::setUserProperties(const std::map<std::string, std::string>& user_p
   }
 }
 
-std::map<std::string, std::string> Message::getUserProperties() const { return user_properties_; }
+std::map<std::string, std::string> Message::getUserProperties() const {
+  return user_properties_;
+}
 
-std::string Message::getTopic() const { return topic_; }
+std::string Message::getTopic() const {
+  return topic_;
+}
 
 void Message::setTopic(const std::string& topic) {
   if (topic.empty()) {
@@ -74,7 +78,9 @@ void Message::setTopic(const std::string& topic) {
   topic_ = std::string(topic.data(), topic.length());
 }
 
-std::string Message::getTag() const { return tag_; }
+std::string Message::getTag() const {
+  return tag_;
+}
 
 void Message::setTag(const std::string& tag) {
   if (tag.empty()) {
@@ -84,7 +90,9 @@ void Message::setTag(const std::string& tag) {
   tag_ = std::string(tag.data(), tag.length());
 }
 
-std::string Message::getMsgID() const { return message_id_; }
+std::string Message::getMsgID() const {
+  return message_id_;
+}
 
 void Message::setMsgID(const std::string& message_id) {
   if (message_id.empty()) {
@@ -93,7 +101,9 @@ void Message::setMsgID(const std::string& message_id) {
   message_id_ = std::string(message_id.data(), message_id.length());
 }
 
-std::vector<std::string> Message::getKeys() const { return keys_; }
+std::vector<std::string> Message::getKeys() const {
+  return keys_;
+}
 
 void Message::attachKey(const std::string& key) {
   if (key.empty()) {
@@ -103,13 +113,17 @@ void Message::attachKey(const std::string& key) {
   keys_.push_back(std::string(key.data(), key.length()));
 }
 
-std::chrono::system_clock::time_point Message::getStartDeliverTime() const { return delivery_timestamp_; }
+std::chrono::system_clock::time_point Message::getStartDeliverTime() const {
+  return delivery_timestamp_;
+}
 
 void Message::setStartDeliverTime(std::chrono::system_clock::time_point delivery_timepoint) {
   delivery_timestamp_ = delivery_timepoint;
 }
 
-std::string Message::getBody() const { return body_; }
+std::string Message::getBody() const {
+  return body_;
+}
 
 void Message::setBody(const std::string& body) {
   if (body.empty()) {
@@ -119,19 +133,29 @@ void Message::setBody(const std::string& body) {
   body_ = std::string(body.data(), body.length());
 }
 
-std::int32_t Message::getReconsumeTimes() const { return reconsume_times_; }
+std::int32_t Message::getReconsumeTimes() const {
+  return reconsume_times_;
+}
 
-void Message::setReconsumeTimes(std::int32_t reconsume_times) { reconsume_times_ = reconsume_times; }
+void Message::setReconsumeTimes(std::int32_t reconsume_times) {
+  reconsume_times_ = reconsume_times;
+}
 
-std::chrono::system_clock::time_point Message::getStoreTimestamp() const { return store_timestamp_; }
+std::chrono::system_clock::time_point Message::getStoreTimestamp() const {
+  return store_timestamp_;
+}
 
 void Message::setStoreTimestamp(std::chrono::system_clock::time_point store_timepoint) {
   store_timestamp_ = store_timepoint;
 }
 
-std::int64_t Message::getQueueOffset() const { return queue_offset_; }
+std::int64_t Message::getQueueOffset() const {
+  return queue_offset_;
+}
 
-void Message::setQueueOffset(std::int64_t queue_offset) { queue_offset_ = queue_offset; }
+void Message::setQueueOffset(std::int64_t queue_offset) {
+  queue_offset_ = queue_offset;
+}
 
 std::string Message::toString() const {
   std::stringstream ss;
@@ -139,6 +163,8 @@ std::string Message::toString() const {
   return ss.str();
 }
 
-std::string Message::toUserString() const { return absl::StrJoin(user_properties_, ",", absl::PairFormatter("=")); }
+std::string Message::toUserString() const {
+  return absl::StrJoin(user_properties_, ",", absl::PairFormatter("="));
+}
 
-} // namespace ons
+ONS_NAMESPACE_END

@@ -3,7 +3,7 @@
 #include "AccessPoint.h"
 #include "ons/ONSFactory.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSClientAbstract {
 public:
@@ -23,4 +23,4 @@ protected:
   AccessPoint access_point_;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

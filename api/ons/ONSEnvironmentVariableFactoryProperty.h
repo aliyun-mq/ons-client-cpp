@@ -2,7 +2,7 @@
 
 #include "ONSFactoryProperty.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSEnvironmentVariableFactoryProperty : public ONSFactoryProperty {
 public:
@@ -14,4 +14,4 @@ private:
   void parseEnvironmentVariables();
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

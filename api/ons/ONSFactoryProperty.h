@@ -10,7 +10,8 @@
 #include "ONSClient.h"
 #include "Trace.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 class ONSCLIENT_API ONSFactoryProperty {
 public:
   ONSFactoryProperty(bool set_defaults = true);
@@ -124,4 +125,5 @@ private:
 
   void loadConfigFile();
 };
-} // namespace ons
+
+ONS_NAMESPACE_END

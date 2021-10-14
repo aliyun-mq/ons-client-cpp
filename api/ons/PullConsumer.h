@@ -9,7 +9,7 @@
 #include "ONSClientException.h"
 #include "PullResultONS.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ONSFactoryProperty;
 
@@ -41,4 +41,4 @@ public:
   virtual void persistConsumerOffset4PullConsumer(const MessageQueueONS& mq) noexcept(false) = 0;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

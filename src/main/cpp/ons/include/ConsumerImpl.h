@@ -8,7 +8,7 @@
 #include "ons/ONSFactory.h"
 #include "rocketmq/DefaultMQPushConsumer.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class ConsumerImpl : public PushConsumer, public ONSConsumerAbstract {
 public:
@@ -25,4 +25,4 @@ public:
   void registerMessageListener(MessageListener* listener) override;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

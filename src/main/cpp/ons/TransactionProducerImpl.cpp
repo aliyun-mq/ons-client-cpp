@@ -10,7 +10,7 @@
 
 #include "spdlog/spdlog.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 TransactionProducerImpl::TransactionProducerImpl(const ONSFactoryProperty& factory_property,
                                                  LocalTransactionChecker* checker)
@@ -46,9 +46,13 @@ TransactionProducerImpl::TransactionProducerImpl(const ONSFactoryProperty& facto
   }
 }
 
-void TransactionProducerImpl::start() { producer_.start(); }
+void TransactionProducerImpl::start() {
+  producer_.start();
+}
 
-void TransactionProducerImpl::shutdown() { producer_.shutdown(); }
+void TransactionProducerImpl::shutdown() {
+  producer_.shutdown();
+}
 
 SendResultONS TransactionProducerImpl::send(Message& msg, LocalTransactionExecuter* executor) {
   assert(executor);
@@ -56,18 +60,18 @@ SendResultONS TransactionProducerImpl::send(Message& msg, LocalTransactionExecut
   auto transaction = producer_.prepare(message);
   TransactionStatus status = executor->execute(msg);
   switch (status) {
-  case TransactionStatus::CommitTransaction:
-    transaction->commit();
-    break;
-  case TransactionStatus::RollbackTransaction:
-    transaction->rollback();
-    break;
-  case TransactionStatus::Unknow:
-    break;
+    case TransactionStatus::CommitTransaction:
+      transaction->commit();
+      break;
+    case TransactionStatus::RollbackTransaction:
+      transaction->rollback();
+      break;
+    case TransactionStatus::Unknow:
+      break;
   }
   auto send_result = SendResultONS();
   send_result.setMessageId(transaction->messageId());
   return send_result;
 }
 
-} // namespace ons
+ONS_NAMESPACE_END

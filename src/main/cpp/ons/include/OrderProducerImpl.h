@@ -6,7 +6,7 @@
 #include "ons/OrderProducer.h"
 #include "rocketmq/DefaultMQProducer.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
 
 class OrderProducerImpl : public OrderProducer, public ONSClientAbstract {
 
@@ -26,4 +26,4 @@ private:
   ONSMessageQueueSelector selector_;
 };
 
-} // namespace ons
+ONS_NAMESPACE_END

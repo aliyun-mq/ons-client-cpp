@@ -5,7 +5,8 @@
 #include "absl/strings/str_replace.h"
 #include "absl/strings/str_split.h"
 
-namespace ons {
+ONS_NAMESPACE_BEGIN
+
 const char* AccessPoint::PREFIX = "http://MQ_INST_";
 
 const char* AccessPoint::SCHEMA = "http://";
@@ -33,4 +34,4 @@ std::string AccessPoint::nameServerAddress() const {
   return std::string(name_server.data(), name_server.length());
 }
 
-} // namespace ons
+ONS_NAMESPACE_END
