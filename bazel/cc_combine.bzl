@@ -2,7 +2,6 @@ load("@bazel_tools//tools/cpp:toolchain_utils.bzl", "find_cpp_toolchain")
 
 def _combine_impl(ctx):
     cc_toolchain = find_cpp_toolchain(ctx)   
-    print("ar: {}".format(cc_toolchain.ar_executable))
     target_list = []
     for dep_target in ctx.attr.deps:        
         # CcInfo, InstrumentedFilesInfo, OutputGroupInfo    
