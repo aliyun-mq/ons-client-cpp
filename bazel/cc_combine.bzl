@@ -12,7 +12,6 @@ def _combine_impl(ctx):
             for linker_in_lib in linker_in.libraries:     
                 # Refer https://docs.bazel.build/versions/main/skylark/lib/LibraryToLink.html           
                 if linker_in_lib.pic_static_library != None:
-                    print("Add PIC archive {}".format(linker_in_lib.pic_static_library.path))
                     target_list.append(linker_in_lib.pic_static_library)
                 else:
                     if linker_in_lib.static_library != None:
