@@ -52,7 +52,7 @@ ONSFactoryProperty::ONSFactoryProperty(bool set_defaults) {
 }
 
 void ONSFactoryProperty::setDefaults() {
-  setMessageModel(MessageModel::CLUSTERING);
+  setMessageModel(ons::MessageModel::CLUSTERING);
   setSendMsgTimeout(std::chrono::seconds(3));
   setSuspendDuration(std::chrono::seconds(3));
   setFactoryProperty(MaxMsgCacheSize, "1000");
@@ -281,12 +281,12 @@ std::string ONSFactoryProperty::getMessageModel() const {
 
 ONSFactoryProperty& ONSFactoryProperty::setMessageModel(ons::MessageModel message_model) {
   switch (message_model) {
-    case MessageModel::CLUSTERING:
-      setFactoryProperty(MessageModel, CLUSTERING);
+	case ons::MessageModel::CLUSTERING:
+      setFactoryProperty(ONSFactoryProperty::MessageModel, ONSFactoryProperty::CLUSTERING);
       break;
 
-    case MessageModel::BROADCASTING:
-      setFactoryProperty(MessageModel, BROADCASTING);
+	case ons::MessageModel::BROADCASTING:
+      setFactoryProperty(ONSFactoryProperty::MessageModel, ONSFactoryProperty::BROADCASTING);
       break;
   }
   return *this;
