@@ -36,6 +36,18 @@ ONSConsumerAbstract::ONSConsumerAbstract(const ONSFactoryProperty& factory_prope
   } else if (!factory_property.getNameSrvDomain().empty()) {
     consumer_.setNameServerListDiscoveryEndpoint(factory_property.getNameSrvDomain());
   }
+
+  auto message_model = factory_property.getMessageModel();
+  if (ONSFactoryProperty::BROADCASTING == message_model) {
+    consumer_.setMessageModel(ROCKETMQ_NAMESPACE::MessageModel::BROADCASTING);
+  } else {
+    consumer_.setMessageModel(ROCKETMQ_NAMESPACE::MessageModel::CLUSTERING);
+  }
+
+  int thread_number = factory_property.getConsumeThreadNums();
+  if (thread_number > 0 && thread_number <= 1024) {
+    consumer_.setConsumeThreadCount(thread_number);
+  }
 }
 
 void ONSConsumerAbstract::start() {
