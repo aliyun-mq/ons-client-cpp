@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "MessageListener.h"
+#include "OffsetStore.h"
 
 ONS_NAMESPACE_BEGIN
 
@@ -17,6 +20,8 @@ public:
   virtual void subscribe(const std::string& topic, const std::string& filter_expression) = 0;
 
   virtual void registerMessageListener(MessageListener* listener) = 0;
+
+  virtual void withOffsetStore(std::unique_ptr<OffsetStore> offset_store) = 0;
 };
 
 ONS_NAMESPACE_END

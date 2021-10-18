@@ -23,6 +23,8 @@ public:
   void subscribe(const std::string& topic, const std::string& sub_expression) override;
 
   void registerMessageListener(MessageListener* listener) override;
+
+  void withOffsetStore(std::unique_ptr<OffsetStore> offset_store) override;
 };
 
 ONS_NAMESPACE_END

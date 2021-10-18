@@ -3,6 +3,7 @@
 #include "absl/memory/memory.h"
 
 #include "MessageListenerWrapper.h"
+#include "OffsetStoreAdaptor.h"
 
 ONS_NAMESPACE_BEGIN
 
@@ -36,6 +37,11 @@ void ConsumerImpl::registerMessageListener(MessageListener* listener) {
 
   auto message_listener = absl::make_unique<MessageListenerWrapper>(listener);
   ONSConsumerAbstract::registerMessageListener(std::move(message_listener));
+}
+
+void ConsumerImpl::withOffsetStore(std::unique_ptr<OffsetStore> offset_store) {
+  auto store = absl::make_unique<ROCKETMQ_NAMESPACE::OffsetStoreAdaptor>(std::move(offset_store));
+  consumer_.setOffsetStore(std::move(store));
 }
 
 ONS_NAMESPACE_END

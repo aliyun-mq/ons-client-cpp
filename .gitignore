@@ -6,3 +6,4 @@ bazel-testlogs
 compile_commands.json
 .vscode
 .clwb
+.cache
