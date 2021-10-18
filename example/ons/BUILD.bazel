@@ -79,3 +79,23 @@ cc_binary(
         "//src/main/cpp/ons:ons_library",
     ],
 )
+
+cc_binary(
+    name = "example_broadcasting_push_consumer",
+    srcs = [
+        "ExampleBroadcastingPushConsumer.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)
+
+cc_binary(
+    name = "example_broadcasting_push_consumer_with_offset_store",
+    srcs = [
+        "ExampleBroadcastingPushConsumerWithOffsetStore.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)
