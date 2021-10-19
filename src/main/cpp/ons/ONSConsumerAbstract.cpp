@@ -48,6 +48,13 @@ ONSConsumerAbstract::ONSConsumerAbstract(const ONSFactoryProperty& factory_prope
   if (thread_number > 0 && thread_number <= 1024) {
     consumer_.setConsumeThreadCount(thread_number);
   }
+
+  const auto& throttle = factory_property.throttle();
+  if (!throttle.empty()) {
+    for (const auto& entry : throttle) {
+      consumer_.setThrottle(entry.first, entry.second);
+    }
+  }
 }
 
 void ONSConsumerAbstract::start() {

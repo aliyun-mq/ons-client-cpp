@@ -99,3 +99,13 @@ cc_binary(
         "//src/main/cpp/ons:ons_library",
     ],
 )
+
+cc_binary(
+    name = "example_push_consumer_with_throttle",
+    srcs = [
+        "ExamplePushConsumerWithThrottle.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/ons:ons_library",
+    ],
+)

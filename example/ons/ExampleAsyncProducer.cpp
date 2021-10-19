@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
+#include <string>
 
 using namespace std;
 using namespace ons;
@@ -41,7 +42,7 @@ public:
 
 int MyCallback::success_num = 0;
 int MyCallback::failed_num = 0;
-int MyCallback::total = 32;
+int MyCallback::total = 256;
 
 int main(int argc, char* argv[]) {
   rocketmq::Logger& logger = rocketmq::getLogger();
@@ -65,6 +66,7 @@ int main(int argc, char* argv[]) {
 
   MyCallback m_callback;
   for (int i = 0; i < MyCallback::total; ++i) {
+    msg.setTag(std::to_string(i));
     producer->sendAsync(msg, &m_callback);
   }
 

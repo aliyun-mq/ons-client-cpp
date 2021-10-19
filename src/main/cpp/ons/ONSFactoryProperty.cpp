@@ -215,20 +215,6 @@ void ONSFactoryProperty::setOnsChannel(ONSChannel channel) {
   }
 }
 
-void ONSFactoryProperty::setFactoryProperty(const std::string& key, const std::string& value) {
-
-  std::string keyString(key.data(), key.length());
-  std::string valueString(value.data(), value.length());
-
-  try {
-    if (validate(keyString, valueString)) {
-      property_map_[keyString] = valueString;
-    }
-  } catch (ONSClientException& e) {
-    throw e;
-  }
-}
-
 std::string ONSFactoryProperty::getProperty(const std::string& key) const {
   std::string k(key.data(), key.length());
   auto it = property_map_.find(k);
@@ -243,11 +229,7 @@ std::string ONSFactoryProperty::getProperty(const std::string& key, std::string 
   if (value.empty()) {
     return default_value;
   }
-  return value;
-}
-
-void ONSFactoryProperty::setFactoryProperties(const std::map<std::string, std::string>& factory_properties) {
-  property_map_ = factory_properties;
+  return std::move(value);
 }
 
 std::map<std::string, std::string> ONSFactoryProperty::getFactoryProperties() const {
@@ -257,7 +239,7 @@ std::map<std::string, std::string> ONSFactoryProperty::getFactoryProperties() co
 std::string ONSFactoryProperty::getProducerId() const {
   auto&& group_id = getProperty(GroupId);
   if (!group_id.empty()) {
-    return group_id;
+    return std::move(group_id);
   }
 
   return getProperty(ProducerId, EMPTY_STRING);
@@ -266,7 +248,7 @@ std::string ONSFactoryProperty::getProducerId() const {
 std::string ONSFactoryProperty::getConsumerId() const {
   auto&& group_id = getProperty(GroupId);
   if (!group_id.empty()) {
-    return group_id;
+    return std::move(group_id);
   }
   return getProperty(ConsumerId, EMPTY_STRING);
 }
@@ -281,11 +263,11 @@ std::string ONSFactoryProperty::getMessageModel() const {
 
 ONSFactoryProperty& ONSFactoryProperty::setMessageModel(ons::MessageModel message_model) {
   switch (message_model) {
-	case ons::MessageModel::CLUSTERING:
+    case ons::MessageModel::CLUSTERING:
       setFactoryProperty(ONSFactoryProperty::MessageModel, ONSFactoryProperty::CLUSTERING);
       break;
 
-	case ons::MessageModel::BROADCASTING:
+    case ons::MessageModel::BROADCASTING:
       setFactoryProperty(ONSFactoryProperty::MessageModel, ONSFactoryProperty::BROADCASTING);
       break;
   }

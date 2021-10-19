@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
@@ -31,8 +32,12 @@ public:
   ONSFactoryProperty& setOnsTraceSwitch(bool should_trace);
 
   void setOnsChannel(ONSChannel ons_channel);
-  void setFactoryProperty(const std::string& key, const std::string& value);
-  void setFactoryProperties(const std::map<std::string, std::string>& factory_properties);
+
+  void setFactoryProperty(const std::string& key, const std::string& value) {
+    validate(key, value);
+    property_map_.insert({key, value});
+  }
+
   std::map<std::string, std::string> getFactoryProperties() const;
   std::string getProducerId() const;
   std::string getConsumerId() const;
@@ -66,6 +71,22 @@ public:
   std::string getInstanceId() const;
 
   operator bool();
+
+  /**
+   * @brief Client-side throttling policy. Maximum number of messages
+   * consumption per topic allowed.
+   *
+   * @param topic Topic name
+   * @param qps Maximum number of messages per second allowed. Clients would
+   * enforce thottling if there are excessively many messages locally cached.
+   */
+  void throttle(const std::string& topic, std::uint32_t qps) {
+    throttle_.insert({topic, qps});
+  }
+
+  const std::map<std::string, std::uint32_t> throttle() const {
+    return throttle_;
+  }
 
   /**
    * @brief Path of log files. If unspecified, defaults to ${HOME}/logs/rocketmq
@@ -116,6 +137,8 @@ protected:
 
 private:
   std::map<std::string, std::string> property_map_;
+
+  std::map<std::string, std::uint32_t> throttle_;
 
   std::string getProperty(const std::string& key) const;
 
