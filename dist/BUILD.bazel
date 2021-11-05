@@ -8,6 +8,9 @@ cc_combine(
     deps = [
         "//src/main/cpp/ons:ons_library",
     ],
+    excludes = [
+        "libstrings.a",
+    ],
     target_compatible_with = [
         "@platforms//os:linux",
     ],

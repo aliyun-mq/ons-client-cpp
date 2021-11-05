@@ -3,6 +3,8 @@ load("@bazel_tools//tools/cpp:toolchain_utils.bzl", "find_cpp_toolchain")
 def _combine_impl(ctx):
     cc_toolchain = find_cpp_toolchain(ctx)   
     target_list = []
+    included_list = []
+    excluded_list = []
     for dep_target in ctx.attr.deps:        
         # CcInfo, InstrumentedFilesInfo, OutputGroupInfo    
         # Refer https://docs.bazel.build/versions/main/skylark/lib/LinkerInput.html  
@@ -11,10 +13,17 @@ def _combine_impl(ctx):
             for linker_in_lib in linker_in.libraries:     
                 # Refer https://docs.bazel.build/versions/main/skylark/lib/LibraryToLink.html           
                 if linker_in_lib.pic_static_library != None:
+                    if linker_in_lib.pic_static_library.basename in ctx.attr.excludes:
+                        excluded_list.append(linker_in_lib.pic_static_library.basename)
+                        continue
                     target_list.append(linker_in_lib.pic_static_library)
+                    included_list.append(linker_in_lib.pic_static_library.basename)
                 else:
                     if linker_in_lib.static_library != None:
                         print("PIC of {} is missing".format(linker_in_lib.static_library.basename))
+    
+    print("Excluded PIC libraries: [{}]".format(", ".join(excluded_list)))
+    print("Combined PIC libraries: [{}]".format(", ".join(included_list)))
     
     output = ctx.outputs.output
     if ctx.attr.genstatic:
@@ -71,6 +80,7 @@ cc_combine = rule(
         "_cc_toolchain": attr.label(default = Label("@bazel_tools//tools/cpp:current_cc_toolchain")),
         "genstatic" : attr.bool(default = False),
         "deps": attr.label_list(allow_files = [".a"]),
+        "excludes": attr.string_list(),
         "output": attr.output()
     },
 )
