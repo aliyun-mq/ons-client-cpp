@@ -49,6 +49,9 @@ ONSConsumerAbstract::ONSConsumerAbstract(const ONSFactoryProperty& factory_prope
     consumer_.setConsumeThreadCount(thread_number);
   }
 
+  bool traceSwitchOn = factory_property.getOnsTraceSwitch();
+  consumer_.enableTracing(traceSwitchOn);
+
   const auto& throttle = factory_property.throttle();
   if (!throttle.empty()) {
     for (const auto& entry : throttle) {
