@@ -45,6 +45,9 @@ ProducerImpl::ProducerImpl(const ONSFactoryProperty& factory_property)
   } else if (!factory_property.getNameSrvDomain().empty()) {
     producer_.setNameServerListDiscoveryEndpoint(factory_property.getNameSrvDomain());
   }
+
+  bool traceSwitchOn = factory_property.getOnsTraceSwitch();
+  producer_.enableTracing(traceSwitchOn);
 }
 
 void ProducerImpl::start() {
