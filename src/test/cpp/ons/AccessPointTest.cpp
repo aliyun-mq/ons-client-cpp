@@ -28,7 +28,7 @@ TEST_F(AccessPointTest, testResourceNamespace) {
 }
 
 TEST_F(AccessPointTest, testNameServerAddress) {
-  const char* expected = "cn-shanghai.mq-internal.aliyuncs.com:8080";
+  const char* expected = "mq-inst-1322518017229982-baa4ls3a.cn-shanghai.mq-internal.aliyuncs.com:8080";
   ASSERT_EQ(expected, access_point_.nameServerAddress());
 }
 

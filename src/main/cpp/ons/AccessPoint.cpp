@@ -28,10 +28,11 @@ std::string AccessPoint::resourceNamespace() const {
 
 std::string AccessPoint::nameServerAddress() const {
   // If extensive domain name is supported, use the following comment-out line.
-  // return absl::StrReplaceAll(absl::StripPrefix(access_point_, SCHEMA), {{"_", "-"}});
-  absl::string_view name_server =
-      absl::StripPrefix(absl::StripPrefix(absl::StripPrefix(access_point_, SCHEMA), resourceNamespace()), ".");
-  return std::string(name_server.data(), name_server.length());
+  return absl::AsciiStrToLower(absl::StrReplaceAll(absl::StripPrefix(access_point_, SCHEMA), {{"_", "-"}}));
+  // If wildcard sub-domain name is preferred
+  // absl::string_view name_server =
+  //     absl::StripPrefix(absl::StripPrefix(absl::StripPrefix(access_point_, SCHEMA), resourceNamespace()), ".");
+  // return std::string(name_server.data(), name_server.length());
 }
 
 ONS_NAMESPACE_END
