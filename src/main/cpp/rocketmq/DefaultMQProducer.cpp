@@ -93,7 +93,7 @@ SendResult DefaultMQProducer::send(const MQMessage& message, bool filter_active_
   if (ec) {
     THROW_MQ_EXCEPTION(MQClientException, ec.message(), ec.value());
   }
-  return std::move(send_result);
+  return send_result;
 }
 
 SendResult DefaultMQProducer::send(const MQMessage& message, std::error_code& ec) noexcept {

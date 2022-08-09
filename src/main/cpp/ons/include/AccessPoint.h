@@ -15,13 +15,11 @@ ONS_NAMESPACE_BEGIN
 
 class AccessPoint {
 public:
-  explicit AccessPoint(absl::string_view access_point) : access_point_(access_point.data(), access_point.length()) {
-    SPDLOG_INFO("Resource namespace={}, name-server-address={}", resourceNamespace(), nameServerAddress());
-  }
+  explicit AccessPoint(absl::string_view access_point);
 
   explicit operator bool() const;
 
-  std::string resourceNamespace() const;
+  const std::string& resourceNamespace() const;
 
   std::string nameServerAddress() const;
 
@@ -33,6 +31,8 @@ private:
   static const char* RESOURCE_NAMESPACE_PREFIX;
 
   static const char* PREFIX;
+
+  std::string resource_namespace_;
 };
 
 ONS_NAMESPACE_END

@@ -44,11 +44,9 @@ const char* ONSFactoryProperty::DEFAULT_CHANNEL = "ALIYUN";
 
 const std::string ONSFactoryProperty::EMPTY_STRING;
 
-ONSFactoryProperty::ONSFactoryProperty(bool set_defaults) {
-  if (set_defaults) {
-    setDefaults();
-    loadConfigFile();
-  }
+ONSFactoryProperty::ONSFactoryProperty() {
+  setDefaults();
+  loadConfigFile();
 }
 
 void ONSFactoryProperty::setDefaults() {
@@ -81,7 +79,7 @@ void ONSFactoryProperty::loadConfigFile() {
   std::fstream config_file_stream;
   config_file_stream.open(config_file_path.c_str(), std::ios_base::in);
   if (!config_file_stream.is_open() || !config_file_stream.good()) {
-    SPDLOG_WARN("Failed to read config file: {}", config_file_path.c_str());
+    SPDLOG_WARN("Failed to read config file: {}", config_path_string);
     return;
   }
 
@@ -103,22 +101,22 @@ void ONSFactoryProperty::loadConfigFile() {
   auto fields = root.fields();
   if (fields.contains(AccessKey)) {
     setFactoryProperty(AccessKey, fields[AccessKey].string_value());
-    SPDLOG_INFO("Set {} through default config file", AccessKey);
+    SPDLOG_INFO("Set {} through config file {}", AccessKey, config_path_string);
   }
 
   if (fields.contains(SecretKey)) {
     setFactoryProperty(SecretKey, fields[SecretKey].string_value());
-    SPDLOG_INFO("Set {} through default config file", SecretKey);
+    SPDLOG_INFO("Set {} through config file {}", SecretKey, config_path_string);
   }
 
   if (fields.contains(NAMESRV_ADDR)) {
     setFactoryProperty(NAMESRV_ADDR, fields[NAMESRV_ADDR].string_value());
-    SPDLOG_INFO("Set {} through default config file", NAMESRV_ADDR);
+    SPDLOG_INFO("Set {} through config file {}", NAMESRV_ADDR, config_path_string);
   }
 
   if (fields.contains(GroupId)) {
     setFactoryProperty(GroupId, fields[GroupId].string_value());
-    SPDLOG_INFO("Set {} through default config file", GroupId);
+    SPDLOG_INFO("Set {} through config file {}", GroupId, config_path_string);
   }
 }
 
@@ -219,7 +217,7 @@ std::string ONSFactoryProperty::getProperty(const std::string& key) const {
   std::string k(key.data(), key.length());
   auto it = property_map_.find(k);
   if (property_map_.end() == it) {
-    return std::string();
+    return {};
   }
   return it->second;
 }

@@ -15,7 +15,7 @@ ONS_NAMESPACE_BEGIN
 
 class ONSCLIENT_API ONSFactoryProperty {
 public:
-  ONSFactoryProperty(bool set_defaults = true);
+  ONSFactoryProperty();
 
   virtual ~ONSFactoryProperty() = default;
 
@@ -144,7 +144,7 @@ private:
 
   std::string getProperty(const std::string& key, std::string default_value) const;
 
-  bool validate(const std::string& key, const std::string& value);
+  static bool validate(const std::string& key, const std::string& value);
 
   void loadConfigFile();
 };

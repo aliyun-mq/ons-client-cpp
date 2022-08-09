@@ -13,6 +13,12 @@ const char* AccessPoint::SCHEMA = "http://";
 
 const char* AccessPoint::RESOURCE_NAMESPACE_PREFIX = "MQ_INST_";
 
+AccessPoint::AccessPoint(absl::string_view access_point) : access_point_(access_point.data(), access_point.length()) {
+  std::vector<absl::string_view> segments = absl::StrSplit(absl::StripPrefix(access_point_, SCHEMA), '.');
+  resource_namespace_ = std::string(segments[0].data(), segments[0].length());
+  SPDLOG_INFO("Resource namespace={}, name-server-address={}", resourceNamespace(), nameServerAddress());
+}
+
 AccessPoint::operator bool() const {
   if (!absl::StartsWith(access_point_, PREFIX)) {
     return false;
@@ -21,9 +27,8 @@ AccessPoint::operator bool() const {
   return absl::StrContains(access_point_, '.');
 }
 
-std::string AccessPoint::resourceNamespace() const {
-  std::vector<absl::string_view> segments = absl::StrSplit(absl::StripPrefix(access_point_, SCHEMA), '.');
-  return std::string(segments[0].data(), segments[0].length());
+const std::string& AccessPoint::resourceNamespace() const {
+  return resource_namespace_;
 }
 
 std::string AccessPoint::nameServerAddress() const {

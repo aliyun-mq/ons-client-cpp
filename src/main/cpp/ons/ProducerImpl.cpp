@@ -37,7 +37,7 @@ ProducerImpl::ProducerImpl(const ONSFactoryProperty& factory_property)
   producer_.setCredentialsProvider(credentials_provider);
 
   if (access_point_) {
-    std::string&& resource_namespace = access_point_.resourceNamespace();
+    const auto& resource_namespace = access_point_.resourceNamespace();
     producer_.setResourceNamespace(resource_namespace);
     producer_.setNamesrvAddr(access_point_.nameServerAddress());
   } else if (!factory_property.getNameSrvAddr().empty()) {
