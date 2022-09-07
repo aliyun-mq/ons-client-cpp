@@ -31,7 +31,10 @@ target_link_libraries(rocketmq
             opencensus::stats
             opencensus_proto
             spdlog)
-set_target_properties(rocketmq PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set_target_properties(rocketmq
+        PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+            ARCHIVE_OUTPUT_NAME ons)
 
 
 add_library(rocketmq_shared
@@ -60,4 +63,4 @@ target_link_libraries(rocketmq_shared
 set_target_properties(rocketmq_shared
         PROPERTIES
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-            LIBRARY_OUTPUT_NAME rocketmq)
+            LIBRARY_OUTPUT_NAME ons)
