@@ -11,7 +11,7 @@ mkdir -p "$BUILD_DIR"
 cd $BUILD_DIR
 cmake -DgRPC_SSL_PROVIDER=package -DgRPC_ZLIB_PROVIDER=package -DCMAKE_BUILD_TYPE=Release ..
 make -j $(nproc)
-VERSION="v3.0.3"
+VERSION="v3.0.4"
 DIST_DIR="$WORKSPACE/$VERSION/"
 if [ -d "$DIST_DIR" ]; then
     rm -fr $DIST_DIR
