@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "TopicAssignmentInfo.h"
+#include "DnsResolver.h"
 #include "google/rpc/code.pb.h"
 #include "rocketmq/RocketMQ.h"
 #include "spdlog/spdlog.h"
@@ -46,30 +47,45 @@ TopicAssignment::TopicAssignment(const QueryAssignmentResponse& response) : debu
 
     MQMessageQueue message_queue(partition.topic().name(), partition.broker().name(), partition.id());
     std::string service_address;
+    rmq::AddressScheme scheme;
     for (const auto& address : broker.endpoints().addresses()) {
       if (service_address.empty()) {
         switch (broker.endpoints().scheme()) {
-          case rmq::AddressScheme::IPv4:
-            service_address.append("ipv4:");
+          case rmq::AddressScheme::IPv4: {
+            auto opt = dnsResolver()->lookupIP(address.host());
+            if (opt) {
+              scheme = rmq::AddressScheme::DOMAIN_NAME;
+              service_address.append("dns:").append(opt.value()).append(":").append(std::to_string(address.port()));
+              SPDLOG_INFO("Replacing ipv4:{}:{} with dns:{}:{}", address.host(), address.port(), opt.value(),
+                          address.port());
+            } else {
+              scheme = rmq::AddressScheme::IPv4;
+              service_address.append("ipv4:");
+            }
             break;
-          case rmq::AddressScheme::IPv6:
+          }
+          case rmq::AddressScheme::IPv6: {
+            scheme = rmq::AddressScheme::IPv6;
             service_address.append("ipv6:");
             break;
-          case rmq::AddressScheme::DOMAIN_NAME:
-            service_address.append("dns:");
+          }
+          case rmq::AddressScheme::DOMAIN_NAME: {
+            service_address.append("dns:").append(address.host()).append(":").append(std::to_string(address.port()));
+            scheme = rmq::AddressScheme::DOMAIN_NAME;
             break;
-          default:
-            SPDLOG_WARN("Unsupported gRPC naming scheme");
+          }
+          default: {
+            SPDLOG_WARN("Unsupported gRPC naming scheme: {}", address.DebugString());
             break;
+          }
         }
       } else {
         service_address.append(",");
       }
-      service_address.append(address.host()).append(":").append(std::to_string(address.port()));
-
-      if (rmq::AddressScheme::DOMAIN_NAME == broker.endpoints().scheme()) {
+      if (rmq::AddressScheme::DOMAIN_NAME == scheme) {
         break;
       }
+      service_address.append(address.host()).append(":").append(std::to_string(address.port()));
     }
     message_queue.serviceAddress(service_address);
     assignment_list_.emplace_back(Assignment(message_queue));
