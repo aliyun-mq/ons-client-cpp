@@ -54,7 +54,7 @@ SendResult DefaultMQProducer::send(MQMessage& message, const std::string& messag
   if (ec) {
     THROW_MQ_EXCEPTION(MQClientException, ec.message(), ec.value());
   }
-  return std::move(send_result);
+  return send_result;
 }
 
 void DefaultMQProducer::setSendMsgTimeout(std::chrono::milliseconds timeout) {

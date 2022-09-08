@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "PullConsumerImpl.h"
-#include "ClientManagerFactory.h"
 #include "InvocationContext.h"
 #include "Signature.h"
 #include "apache/rocketmq/v1/definition.pb.h"

@@ -16,42 +16,34 @@
  */
 #pragma once
 
-#include <string>
-#include <thread>
-
 #include "absl/base/thread_annotations.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/synchronization/mutex.h"
-
-#include "ClientConfig.h"
-#include "ClientManager.h"
-#include "rocketmq/AdminServer.h"
+#include "absl/types/optional.h"
+#include "absl/strings/string_view.h"
+#include "rocketmq/RocketMQ.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
-class ClientManagerFactory {
+class DnsResolver {
 public:
-  static ClientManagerFactory& getInstance();
-
-  ClientManagerPtr getClientManager(const ClientConfig& client_config) LOCKS_EXCLUDED(client_manager_table_mtx_);
-
-  // For test purpose only
-  void addClientManager(const std::string& resource_namespace, const ClientManagerPtr& client_manager)
-      LOCKS_EXCLUDED(client_manager_table_mtx_);
-
-private:
-  ClientManagerFactory();
-
-  virtual ~ClientManagerFactory();
+  void resolve(const std::string& host, const char* port) LOCKS_EXCLUDED(ip_domain_map_mtx_);
 
   /**
-   * Client Id --> Client Instance
+   * Each element is in the form of domain:port;
+   * Elements are joined by ';' separator.
+   *
+   * @param list
    */
-  absl::flat_hash_map<std::string, std::weak_ptr<ClientManager>>
-      client_manager_table_ GUARDED_BY(client_manager_table_mtx_);
-  absl::Mutex client_manager_table_mtx_; // protects client_manager_table_
+  void resolve(const std::vector<std::string>& list);
 
-  rocketmq::admin::AdminServer& admin_server_;
+  absl::optional<std::string> lookupIP(absl::string_view ip) LOCKS_EXCLUDED(ip_domain_map_mtx_);
+
+private:
+  absl::flat_hash_map<std::string, std::string> ip_domain_map_ GUARDED_BY(ip_domain_map_mtx_);
+  absl::Mutex ip_domain_map_mtx_;
 };
+
+DnsResolver* dnsResolver();
 
 ROCKETMQ_NAMESPACE_END

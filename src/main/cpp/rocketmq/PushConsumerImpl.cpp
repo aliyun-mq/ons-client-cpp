@@ -22,10 +22,7 @@
 #include <cstdlib>
 #include <system_error>
 
-#include "apache/rocketmq/v1/definition.pb.h"
-
 #include "AsyncReceiveMessageCallback.h"
-#include "ClientManagerFactory.h"
 #include "ConsumeFifoMessageService.h"
 #include "ConsumeStandardMessageService.h"
 #include "MessageAccessor.h"

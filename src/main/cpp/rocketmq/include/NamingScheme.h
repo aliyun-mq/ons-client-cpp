@@ -27,20 +27,11 @@ ROCKETMQ_NAMESPACE_BEGIN
 
 class NamingScheme {
 public:
-  NamingScheme();
-
-  std::string buildAddress(const std::vector<std::string>& list);
+  static std::string buildAddress(const std::vector<std::string>& list);
 
   static const char* DnsPrefix;
   static const char* IPv4Prefix;
   static const char* IPv6Prefix;
-
-private:
-  static const char* IPv4Regex;
-  static const char* IPv6Regex;
-
-  re2::RE2 ipv4_pattern_;
-  re2::RE2 ipv6_pattern_;
 };
 
 ROCKETMQ_NAMESPACE_END

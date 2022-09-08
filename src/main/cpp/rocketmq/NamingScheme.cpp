@@ -16,7 +16,7 @@
  */
 #include "NamingScheme.h"
 
-#include <cstdint>
+#include "InetAddress.h"
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/strings/numbers.h"
@@ -29,14 +29,6 @@ const char* NamingScheme::DnsPrefix = "dns:";
 const char* NamingScheme::IPv4Prefix = "ipv4:";
 const char* NamingScheme::IPv6Prefix = "ipv6:";
 
-const char* NamingScheme::IPv4Regex =
-    "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])";
-
-const char* NamingScheme::IPv6Regex = "((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}";
-
-NamingScheme::NamingScheme() : ipv4_pattern_(IPv4Regex), ipv6_pattern_(IPv6Regex) {
-}
-
 std::string NamingScheme::buildAddress(const std::vector<std::string>& list) {
   absl::flat_hash_map<std::string, std::uint32_t> ipv4;
   absl::flat_hash_map<std::string, std::uint32_t> ipv6;
@@ -47,7 +39,7 @@ std::string NamingScheme::buildAddress(const std::vector<std::string>& list) {
       continue;
     }
 
-    if (re2::RE2::FullMatch(host_port[0], ipv4_pattern_)) {
+    if (inetAddress().isIPv4(host_port[0])) {
       std::uint32_t port;
       if (absl::SimpleAtoi(host_port[1], &port)) {
         ipv4.insert_or_assign(host_port[0], port);
@@ -55,7 +47,7 @@ std::string NamingScheme::buildAddress(const std::vector<std::string>& list) {
       continue;
     }
 
-    if (re2::RE2::FullMatch(host_port[0], ipv6_pattern_)) {
+    if (inetAddress().isIPv6(host_port[0])) {
       std::uint32_t port;
       if (absl::SimpleAtoi(host_port[1], &port)) {
         ipv6.insert_or_assign(host_port[0], port);
@@ -75,7 +67,7 @@ std::string NamingScheme::buildAddress(const std::vector<std::string>& list) {
   if (!ipv6.empty()) {
     return "ipv6:" + absl::StrJoin(ipv4, ",", absl::PairFormatter(":"));
   }
-  return std::string();
+  return {};
 }
 
 ROCKETMQ_NAMESPACE_END
