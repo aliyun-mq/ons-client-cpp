@@ -14,7 +14,7 @@ ONSConsumerAbstract::ONSConsumerAbstract(const ONSFactoryProperty& factory_prope
   if (consume_thread_nums > 0) {
     consumer_.setConsumeThreadCount(consume_thread_nums);
   }
-  consumer_.setNamesrvAddr(factory_property.getNameSrvAddr());
+  consumer_.setNamesrvAddr(access_point_.nameServerAddress());
 
   absl::string_view instanceName = absl::StripAsciiWhitespace(factory_property.getInstanceId());
   if (instanceName.empty()) {

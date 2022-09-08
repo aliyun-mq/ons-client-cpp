@@ -50,10 +50,8 @@ int main(int argc, char* argv[]) {
   std::cout << "=======Before consuming messages=======" << std::endl;
   ONSFactoryProperty factory_property;
 
-  factory_property.setFactoryProperty(ons::ONSFactoryProperty::GroupId, "GID_cpp_sdk_standard");
-
   PushConsumer* consumer = ONSFactory::getInstance()->createPushConsumer(factory_property);
-  const char* topic = "cpp_sdk_standard";
+  const char* topic = "sdk_standard";
   const char* tag = "*";
 
   // register your own listener here to handle the messages received.

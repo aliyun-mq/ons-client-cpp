@@ -28,8 +28,6 @@ private:
 
   static const char* SCHEMA;
 
-  static const char* RESOURCE_NAMESPACE_PREFIX;
-
   static const char* PREFIX;
 
   std::string resource_namespace_;
