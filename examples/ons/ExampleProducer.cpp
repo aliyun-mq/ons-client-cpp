@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   Producer* producer = nullptr;
   producer = ONSFactory::getInstance()->createProducer(factoryInfo);
   producer->start();
-  Message msg("cpp_sdk_standard", "Your Tag", "Your Key", "This message body.");
+  Message msg("sdk_standard", "Your Tag", "Your Key", "This message body.");
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //                             Send with exception                                                //
