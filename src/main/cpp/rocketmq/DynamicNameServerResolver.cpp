@@ -26,6 +26,7 @@
 
 #include "LoggerImpl.h"
 #include "SchedulerImpl.h"
+#include "DnsResolver.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
@@ -84,7 +85,7 @@ std::string DynamicNameServerResolver::resolve() {
 
   {
     absl::MutexLock lk(&name_server_list_mtx_);
-    return naming_scheme_.buildAddress(name_server_list_);
+    return NamingScheme::buildAddress(name_server_list_);
   }
 }
 
@@ -108,6 +109,7 @@ void DynamicNameServerResolver::onNameServerListFetched(const std::vector<std::s
       SPDLOG_INFO("Name server list changed. {} --> {}", absl::StrJoin(name_server_list_, ";"),
                   absl::StrJoin(name_server_list, ";"));
       name_server_list_ = name_server_list;
+      dnsResolver()->resolve(name_server_list_);
     }
   }
 }

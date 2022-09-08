@@ -25,7 +25,7 @@ ROCKETMQ_NAMESPACE_BEGIN
 
 class Broker {
 public:
-  Broker(std::string name, int id, ServiceAddress service_address)
+  Broker(std::string name, int id, std::shared_ptr<ServiceAddress> service_address)
       : name_(std::move(name)), id_(id), service_address_(std::move(service_address)) {
   }
 
@@ -50,13 +50,13 @@ public:
   }
 
   std::string serviceAddress() const {
-    return service_address_.address();
+    return service_address_->address();
   }
 
 private:
   std::string name_;
   int32_t id_;
-  ServiceAddress service_address_;
+  std::shared_ptr<ServiceAddress> service_address_;
 };
 
 ROCKETMQ_NAMESPACE_END

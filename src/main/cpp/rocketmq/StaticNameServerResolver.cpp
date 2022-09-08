@@ -17,6 +17,8 @@
 #include "StaticNameServerResolver.h"
 
 #include "absl/strings/str_split.h"
+#include "DnsResolver.h"
+#include "InetAddress.h"
 
 #include "LoggerImpl.h"
 
@@ -24,7 +26,8 @@ ROCKETMQ_NAMESPACE_BEGIN
 
 StaticNameServerResolver::StaticNameServerResolver(absl::string_view name_server_list) {
   std::vector<std::string> segments = absl::StrSplit(name_server_list, ';');
-  name_server_address_ = naming_scheme_.buildAddress(segments);
+  dnsResolver()->resolve(segments);
+  name_server_address_ = NamingScheme::buildAddress(segments);
   if (name_server_address_.empty()) {
     SPDLOG_WARN("Failed to create gRPC naming scheme compliant address from {}",
                 std::string(name_server_list.data(), name_server_list.length()));

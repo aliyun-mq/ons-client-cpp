@@ -27,14 +27,11 @@
 #include <utility>
 
 #include "RpcClient.h"
-#include "absl/strings/str_join.h"
 #include "absl/strings/str_split.h"
-#include "apache/rocketmq/v1/definition.pb.h"
 #include "google/rpc/code.pb.h"
 
 #include "ClientImpl.h"
-#include "ClientManagerFactory.h"
-#include "HttpClientImpl.h"
+#include "ClientManagerImpl.h"
 #include "InvocationContext.h"
 #include "LoggerImpl.h"
 #include "MessageAccessor.h"
@@ -62,7 +59,7 @@ void ClientImpl::start() {
   }
   name_server_resolver_->start();
 
-  client_manager_ = ClientManagerFactory::getInstance().getClientManager(*this);
+  client_manager_ = std::make_shared<ClientManagerImpl>(resource_namespace_);
   client_manager_->start();
 
   exporter_ = std::make_shared<OtlpExporter>(client_manager_, this);

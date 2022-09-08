@@ -27,6 +27,7 @@
 #include "Scheduler.h"
 #include "google/rpc/code.pb.h"
 
+#include "DnsResolver.h"
 #include "InvocationContext.h"
 #include "LogInterceptor.h"
 #include "LogInterceptorFactory.h"
@@ -38,7 +39,6 @@
 #include "Protocol.h"
 #include "RpcClient.h"
 #include "RpcClientImpl.h"
-#include "TlsHelper.h"
 #include "UtilAll.h"
 #include "grpcpp/create_channel.h"
 #include "rocketmq/ErrorCode.h"
@@ -624,12 +624,32 @@ void ClientManagerImpl::resolveRoute(const std::string& target_host, const Metad
               break;
           }
 
-          std::vector<Address> addresses;
+          std::int32_t port;
+          bool prefer_domain = true;
+          absl::flat_hash_set<std::string> domains;
           for (const auto& address : broker.endpoints().addresses()) {
-            addresses.emplace_back(Address{address.host(), address.port()});
+            auto&& optional = dnsResolver()->lookupIP(address.host());
+            if (!optional) {
+              prefer_domain = false;
+            } else {
+              domains.insert(optional.value());
+              port = address.port();
+            }
           }
-          ServiceAddress service_address(scheme, addresses);
-          Broker b(partition.broker().name(), partition.broker().id(), service_address);
+
+          std::shared_ptr<ServiceAddress> service_address;
+          std::vector<Address> addresses;
+          if (prefer_domain && domains.size() == 1) {
+            addresses.emplace_back(Address{*domains.begin(), port});
+            service_address = std::make_shared<ServiceAddress>(AddressScheme::DOMAIN_NAME, addresses);
+          } else {
+            for (const auto& address : broker.endpoints().addresses()) {
+              addresses.emplace_back(Address{address.host(), address.port()});
+            }
+            service_address = std::make_shared<ServiceAddress>(scheme, addresses);
+          }
+          Broker b(partition.broker().name(), partition.broker().id(),
+                   std::move(service_address));
 
           Permission permission = Permission::READ_WRITE;
           switch (partition.permission()) {

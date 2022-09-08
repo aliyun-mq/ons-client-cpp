@@ -14,38 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-
-#include "absl/strings/string_view.h"
-
-#include "NameServerResolver.h"
-#include "NamingScheme.h"
+#include "InetAddress.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
-class StaticNameServerResolver : public NameServerResolver {
-public:
-  explicit StaticNameServerResolver(absl::string_view name_server_list);
+const char* InetAddress::IPv4Regex =
+    "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])";
 
-  void start() override {
-  }
+const char* InetAddress::IPv6Regex = "((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}";
 
-  void shutdown() override {
-  }
+const InetAddress& inetAddress() {
+  static InetAddress address;
+  return address;
+}
 
-  std::string resolve() override;
+InetAddress::InetAddress() : ipv4_pattern_(IPv4Regex), ipv6_pattern_(IPv6Regex) {
+}
 
-private:
-  /**
-   * @brief Name server addresses, following gRPC URI schemes described in
-   * https://github.com/grpc/grpc/blob/master/doc/naming.md
-   *
-   * Sample values are:
-   * dns:[//authority/]host[:port]
-   * ipv4:address[:port][,address[:port],...]
-   * ipv6:address[:port][,address[:port],...]
-   */
-  std::string name_server_address_;
-};
+bool InetAddress::isIPv4(absl::string_view address) const {
+  return re2::RE2::FullMatch(re2::StringPiece(address.data(), address.length()), ipv4_pattern_);
+}
+
+bool InetAddress::isIPv6(absl::string_view address) const {
+  return re2::RE2::FullMatch(re2::StringPiece(address.data(), address.length()), ipv6_pattern_);
+}
 
 ROCKETMQ_NAMESPACE_END
