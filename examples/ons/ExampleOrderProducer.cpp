@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
   logger.init();
 
   ONSFactoryProperty factory_property;
+
   auto order_producer = ONSFactory::getInstance()->createOrderProducer(factory_property);
   order_producer->start();
 
