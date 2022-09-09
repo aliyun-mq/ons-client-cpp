@@ -84,8 +84,8 @@ struct InvocationContext : public BaseInvocationContext {
       auto diff =
           std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - context.deadline())
               .count();
-      SPDLOG_WARN("Asynchronous RPC[{}.{}] timed out, elapsing {}ms, deadline-over-due: {}ms",
-                  absl::FormatTime(created_time, absl::UTCTimeZone()), elapsed, diff);
+      SPDLOG_WARN("Asynchronous RPC[request-id={}, target-host={}] timed out, elapsing {}ms, deadline-over-due: {}ms",
+                  request_id_, remote_address, elapsed, diff);
     }
     try {
       if (callback) {

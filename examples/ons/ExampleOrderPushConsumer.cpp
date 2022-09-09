@@ -42,10 +42,8 @@ int main(int argc, char* argv[]) {
   std::cout << "=======Before consuming messages=======" << std::endl;
   ONSFactoryProperty factory_property;
 
-  factory_property.setFactoryProperty(ons::ONSFactoryProperty::GroupId, "GID_cpp_sdk_standard");
-
   OrderConsumer* consumer = ONSFactory::getInstance()->createOrderConsumer(factory_property);
-  const char* topic = "cpp_sdk_standard";
+  const char* topic = "sdk_standard";
   const char* tag = "*";
 
   consumer->subscribe(topic, tag);
