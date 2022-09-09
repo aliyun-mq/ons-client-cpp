@@ -19,18 +19,26 @@
 
 #include "ons/ONSFactory.h"
 #include "ons/ONSFactoryProperty.h"
+#include "rocketmq/Logger.h"
 
 using namespace ons;
 
 int main(int argc, char* argv[]) {
+  rocketmq::Logger& logger = rocketmq::getLogger();
+  logger.setLevel(rocketmq::Level::Debug);
+  logger.setConsoleLevel(rocketmq::Level::Info);
+  logger.init();
+
   ONSFactoryProperty factory_property;
   auto order_producer = ONSFactory::getInstance()->createOrderProducer(factory_property);
   order_producer->start();
 
-  Message message("cpp_sdk_standard", "TagA", "Sample Body");
-  SendResultONS send_result = order_producer->send(message, "message-group-0");
+  Message message("sdk_fifo", "TagA", "Sample Body");
+  for (int i = 0; i < 16; ++i) {
+    SendResultONS send_result = order_producer->send(message, "message-group-0");
+    std::cout << "Message sent with message-id=" << send_result.getMessageId() << std::endl;
+  }
 
-  std::cout << send_result.getMessageId() << std::endl;
 
   order_producer->shutdown();
 

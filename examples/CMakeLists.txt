@@ -5,4 +5,5 @@ endfunction()
 
 add_example(ons_example_producer ons/ExampleProducer.cpp)
 add_example(ons_example_push_consumer ons/ExamplePushConsumer.cpp)
+add_example(ons_example_order_producer ons/ExampleOrderProducer.cpp)
 add_example(ons_example_order_push_consumer ons/ExampleOrderPushConsumer.cpp)
