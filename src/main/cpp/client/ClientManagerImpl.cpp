@@ -43,6 +43,7 @@
 #include "grpcpp/create_channel.h"
 #include "rocketmq/ErrorCode.h"
 #include "rocketmq/MQMessageExt.h"
+#include "absl/strings/str_join.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
@@ -418,12 +419,20 @@ void ClientManagerImpl::pollCompletionQueue() {
 bool ClientManagerImpl::send(const std::string& target_host, const Metadata& metadata, SendMessageRequest& request,
                              SendCallback* cb) {
   assert(cb);
-  SPDLOG_DEBUG("Prepare to send message to {} asynchronously", target_host);
+
   RpcClientSharedPtr client = getRpcClient(target_host);
   // Invocation context will be deleted in its onComplete() method.
   auto invocation_context = new InvocationContext<SendMessageResponse>();
+
+  auto&& headers = absl::StrJoin(metadata, ",", absl::PairFormatter("="));
+
+  // Log the send-message request in details, including headers.
+  SPDLOG_DEBUG("Prepare to send message to {} asynchronously. Headers: {},{}={}, Request: {}", target_host, headers,
+               MetadataConstants::REQUEST_ID_KEY, invocation_context->request_id_,
+               request.DebugString());
+  
   invocation_context->task_name =
-      fmt::format("Send message[] to {}", request.message().system_attribute().message_id(), target_host);
+      fmt::format("Send message[message-id={}] to {}", request.message().system_attribute().message_id(), target_host);
   invocation_context->remote_address = target_host;
   for (const auto& entry : metadata) {
     invocation_context->context.AddMetadata(entry.first, entry.second);
@@ -769,10 +778,14 @@ void ClientManagerImpl::queryAssignment(
 void ClientManagerImpl::receiveMessage(const std::string& target_host, const Metadata& metadata,
                                        const ReceiveMessageRequest& request, std::chrono::milliseconds timeout,
                                        const std::shared_ptr<ReceiveMessageCallback>& cb) {
-  SPDLOG_DEBUG("Prepare to receive message from {} asynchronously. Request: {}", target_host, request.DebugString());
   RpcClientSharedPtr client = getRpcClient(target_host);
-
   auto invocation_context = new InvocationContext<ReceiveMessageResponse>();
+  auto&& headers = absl::StrJoin(metadata, ",", absl::PairFormatter("="));
+  // Log the receive-message request in details, including headers.
+  SPDLOG_DEBUG("Prepare to receive message from {} asynchronously. Headers: {},{}={}, Request: {}", target_host,
+               headers, MetadataConstants::REQUEST_ID_KEY, invocation_context->request_id_,
+               request.DebugString());
+  
   invocation_context->task_name = fmt::format("ReceiveMessage from queue[{}-{}-{}-{}], host={}", request.group().name(),
                                               request.partition().topic().name(), request.partition().broker().name(),
                                               request.partition().id(), target_host);

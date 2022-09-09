@@ -87,6 +87,11 @@ struct InvocationContext : public BaseInvocationContext {
       SPDLOG_WARN("Asynchronous RPC[request-id={}, target-host={}] timed out, elapsing {}ms, deadline-over-due: {}ms",
                   request_id_, remote_address, elapsed, diff);
     }
+
+    // Log response from server
+    SPDLOG_DEBUG("TargetHost={},{}={},TaskName={}: {}",
+                 remote_address, MetadataConstants::REQUEST_ID_KEY, request_id_, task_name, response.DebugString());
+
     try {
       if (callback) {
         callback(this);
