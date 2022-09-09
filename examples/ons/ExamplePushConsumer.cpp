@@ -49,6 +49,7 @@ int main(int argc, char* argv[]) {
 
   std::cout << "=======Before consuming messages=======" << std::endl;
   ONSFactoryProperty factory_property;
+  factory_property.setFactoryProperty(ONSFactoryProperty::GroupId, "GID_sdk");
 
   PushConsumer* consumer = ONSFactory::getInstance()->createPushConsumer(factory_property);
   const char* topic = "sdk_standard";
