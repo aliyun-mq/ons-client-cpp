@@ -49,13 +49,14 @@ void AsyncReceiveMessageCallback::onCompletion(const std::error_code& ec, const 
   }
 
   if (ec) {
-    SPDLOG_WARN("Receive message from {} failed. Cause: {}. Attempt later.", process_queue->simpleName(), ec.message());
+    SPDLOG_WARN("Failed to receive messages from {}. Cause: {}. Attempt later.", process_queue->simpleName(),
+                ec.message());
     receiveMessageLater();
     return;
   }
 
-  SPDLOG_DEBUG("Receive messages from broker[host={}] returns with status=FOUND, msgListSize={}, queue={}",
-               result.source_host, result.messages.size(), process_queue->simpleName());
+  SPDLOG_DEBUG("Received {} messages from broker[host={}] for queue={}", result.messages.size(), result.source_host,
+               process_queue->simpleName());
   process_queue->cacheMessages(result.messages);
   impl->getConsumeMessageService()->signalDispatcher();
   checkThrottleThenReceive();
