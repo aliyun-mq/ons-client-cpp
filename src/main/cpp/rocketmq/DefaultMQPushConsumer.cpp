@@ -108,6 +108,7 @@ void DefaultMQPushConsumer::setCustomExecutor(const Executor& executor) {
 }
 
 void DefaultMQPushConsumer::setThrottle(const std::string& topic, uint32_t threshold) {
+  // TODO: Implement later.
 }
 
 void DefaultMQPushConsumer::setResourceNamespace(const std::string& resource_namespace) {
