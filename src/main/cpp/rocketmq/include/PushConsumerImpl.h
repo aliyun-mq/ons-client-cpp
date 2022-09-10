@@ -148,8 +148,6 @@ public:
     return custom_executor_;
   }
 
-  void setThrottle(const std::string& topic, uint32_t threshold);
-
   MessageModel messageModel() const override {
     return message_model_;
   }
@@ -185,8 +183,6 @@ public:
   uint64_t maxCachedMessageMemory() const override {
     return MixAll::DEFAULT_CACHED_MESSAGE_MEMORY;
   }
-
-  void iterateProcessQueue(const std::function<void(ProcessQueueSharedPtr)>& callback) override;
 
   MessageListener* messageListener() override {
     return message_listener_;

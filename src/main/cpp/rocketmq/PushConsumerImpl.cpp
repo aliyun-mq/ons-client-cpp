@@ -493,24 +493,6 @@ std::size_t PushConsumerImpl::getProcessQueueTableSize() {
   return process_queue_table_.size();
 }
 
-void PushConsumerImpl::setThrottle(const std::string& topic, uint32_t threshold) {
-  absl::MutexLock lock(&throttle_table_mtx_);
-  throttle_table_.emplace(topic, threshold);
-  // If consumer has started, update it dynamically.
-  if (getConsumeMessageService()) {
-    getConsumeMessageService()->throttle(topic, threshold);
-  }
-}
-
-void PushConsumerImpl::iterateProcessQueue(const std::function<void(ProcessQueueSharedPtr)>& callback) {
-  absl::MutexLock lock(&process_queue_table_mtx_);
-  for (const auto& item : process_queue_table_) {
-    if (item.second->hasPendingMessages()) {
-      callback(item.second);
-    }
-  }
-}
-
 void PushConsumerImpl::fetchRoutes() {
   std::vector<std::string> topics;
   {
@@ -597,8 +579,8 @@ void PushConsumerImpl::prepareHeartbeatData(HeartbeatRequest& request) {
     }
   }
 
-  assert(consume_message_service_);
-  switch (consume_message_service_->messageListenerType()) {
+  assert(message_listener_);
+  switch (message_listener_->listenerType()) {
     case MessageListenerType::FIFO: {
       // TODO: Use enumeration in the protocol buffer specification?
       request.set_fifo_flag(true);

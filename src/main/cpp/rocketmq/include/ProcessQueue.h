@@ -64,6 +64,9 @@ public:
   virtual const FilterExpression& getFilterExpression() const = 0;
 
   virtual const MQMessageQueue& messageQueue() const = 0;
+
+  virtual std::int64_t nextOffset() const = 0;
+  virtual void nextOffset(std::int64_t value) = 0;
 };
 
 using ProcessQueueWeakPtr = std::weak_ptr<ProcessQueue>;

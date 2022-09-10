@@ -92,6 +92,14 @@ public:
     return message_queue_;
   }
 
+  std::int64_t nextOffset() const override {
+    return next_offset_;
+  }
+
+  void nextOffset(std::int64_t value) override {
+    next_offset_ = value;
+  }
+
 private:
   MQMessageQueue message_queue_;
 
@@ -124,6 +132,8 @@ private:
    *
    */
   std::atomic<uint64_t> cached_message_memory_;
+
+  std::int64_t next_offset_{0};
 
   void popMessage();
   void wrapPopMessageRequest(absl::flat_hash_map<std::string, std::string>& metadata,
