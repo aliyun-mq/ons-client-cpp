@@ -23,6 +23,7 @@
 #include "rocketmq/Logger.h"
 #include "rocketmq/MQMessageExt.h"
 #include "rocketmq/MessageListener.h"
+#include "rocketmq/MessageModel.h"
 #include "spdlog/spdlog.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
@@ -54,9 +55,19 @@ void ConsumeMessageServiceImpl::dispatch(std::shared_ptr<ProcessQueue> process_q
     return;
   }
 
+  auto message_model = consumer->messageModel();
+
   if (MessageListenerType::FIFO == message_listener_->listenerType()) {
-    auto consume_task = std::make_shared<ConsumeTask>(shared_from_this(), process_queue, std::move(messages));
-    pool_->submit([consume_task]() { consume_task->process(); });
+    switch (message_model) {
+      case MessageModel::BROADCASTING: {
+        break;
+      }
+      case MessageModel::CLUSTERING: {
+        auto consume_task = std::make_shared<ConsumeTask>(shared_from_this(), process_queue, std::move(messages));
+        pool_->submit([consume_task]() { consume_task->process(); });
+        break;
+      }
+    }
     return;
   }
 

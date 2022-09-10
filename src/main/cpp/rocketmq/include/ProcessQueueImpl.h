@@ -30,11 +30,12 @@
 #include "TopicAssignmentInfo.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
+#include "apache/rocketmq/v1/service.pb.h"
 #include "rocketmq/MQMessageExt.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
-class PushConsumerImpl;
+class PushConsumer;
 
 /**
  * @brief Once messages are fetched(either pulled or popped) from remote server, they are firstly put into cache.
@@ -42,14 +43,18 @@ class PushConsumerImpl;
  * state. Once messages are processed by user-passed-in callback, their quota will be released for future incoming
  * messages.
  */
-class ProcessQueueImpl : virtual public ProcessQueue {
+class ProcessQueueImpl : virtual public ProcessQueue, public std::enable_shared_from_this<ProcessQueueImpl> {
 public:
   ProcessQueueImpl(MQMessageQueue message_queue, FilterExpression filter_expression,
-                   std::weak_ptr<PushConsumerImpl> consumer, std::shared_ptr<ClientManager> client_instance);
+                   std::weak_ptr<PushConsumer> consumer, std::shared_ptr<ClientManager> client_instance);
 
   ~ProcessQueueImpl() override;
 
   void callback(std::shared_ptr<AsyncReceiveMessageCallback> callback) override;
+
+  std::shared_ptr<AsyncReceiveMessageCallback> callback() const override {
+    return receive_callback_;
+  }
 
   bool expired() const override;
 
@@ -116,7 +121,7 @@ private:
 
   std::string simple_name_;
 
-  std::weak_ptr<PushConsumerImpl> consumer_;
+  std::weak_ptr<PushConsumer> consumer_;
   std::shared_ptr<ClientManager> client_manager_;
 
   std::shared_ptr<AsyncReceiveMessageCallback> receive_callback_;
@@ -138,6 +143,10 @@ private:
   void popMessage();
   void wrapPopMessageRequest(absl::flat_hash_map<std::string, std::string>& metadata,
                              rmq::ReceiveMessageRequest& request);
+
+  void pullMessage();
+  void wrapPullMessageRequest(absl::flat_hash_map<std::string, std::string>& metadata,
+                              rmq::PullMessageRequest& request);
 
   void wrapFilterExpression(rmq::FilterExpression* filter_expression);
 };

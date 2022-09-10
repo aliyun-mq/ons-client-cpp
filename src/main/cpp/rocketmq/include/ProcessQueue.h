@@ -39,6 +39,8 @@ public:
 
   virtual void callback(std::shared_ptr<AsyncReceiveMessageCallback> callback) = 0;
 
+  virtual std::shared_ptr<AsyncReceiveMessageCallback> callback() const = 0;
+
   virtual void receiveMessage() = 0;
 
   virtual std::string topic() const = 0;

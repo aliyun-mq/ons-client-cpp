@@ -23,6 +23,7 @@
 #include "rocketmq/Logger.h"
 #include "rocketmq/MQMessageExt.h"
 #include "rocketmq/MessageListener.h"
+#include "rocketmq/MessageModel.h"
 #include "spdlog/spdlog.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
@@ -134,6 +135,13 @@ void ConsumeTask::process() {
   }
 
   std::shared_ptr<PushConsumer> consumer = svc->consumer().lock();
+
+  auto message_model = consumer->messageModel();
+  if (MessageModel::BROADCASTING == message_model) {
+    
+
+    return;
+  }
 
   auto self = shared_from_this();
 

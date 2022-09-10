@@ -55,6 +55,10 @@ public:
   ConsumeTask(ConsumeMessageServiceWeakPtr service, std::weak_ptr<ProcessQueue> process_queue,
               std::vector<MQMessageExt> messages);
 
+  /**
+   * If the message model is cluster, the consume logic remains same with 5.x;
+   * If the message model is broadcast, TODO:
+   */
   void process();
 
   void submit();

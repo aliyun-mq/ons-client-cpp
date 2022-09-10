@@ -29,6 +29,7 @@
 #include "PushConsumerImpl.h"
 #include "ReceiveMessageResult.h"
 #include "Signature.h"
+#include "apache/rocketmq/v1/service.pb.h"
 #include "rocketmq/MQMessageExt.h"
 #include "rocketmq/MessageListener.h"
 
@@ -37,8 +38,7 @@ using namespace std::chrono;
 ROCKETMQ_NAMESPACE_BEGIN
 
 ProcessQueueImpl::ProcessQueueImpl(MQMessageQueue message_queue, FilterExpression filter_expression,
-                                   std::weak_ptr<PushConsumerImpl> consumer,
-                                   std::shared_ptr<ClientManager> client_instance)
+                                   std::weak_ptr<PushConsumer> consumer, std::shared_ptr<ClientManager> client_instance)
     : message_queue_(std::move(message_queue)), filter_expression_(std::move(filter_expression)),
       invisible_time_(MixAll::millisecondsOf(MixAll::DEFAULT_INVISIBLE_TIME_)),
       simple_name_(message_queue_.simpleName()), consumer_(std::move(consumer)),
@@ -104,7 +104,17 @@ void ProcessQueueImpl::receiveMessage() {
   if (!consumer) {
     return;
   }
-  popMessage();
+  auto message_model = consumer->messageModel();
+  switch (message_model) {
+    case MessageModel::CLUSTERING: {
+      popMessage();
+      break;
+    }
+    case MessageModel::BROADCASTING: {
+      pullMessage();
+      break;
+    }
+  }
 }
 
 void ProcessQueueImpl::popMessage() {
@@ -178,7 +188,7 @@ void ProcessQueueImpl::wrapFilterExpression(rmq::FilterExpression* filter_expres
 
 void ProcessQueueImpl::wrapPopMessageRequest(absl::flat_hash_map<std::string, std::string>& metadata,
                                              rmq::ReceiveMessageRequest& request) {
-  std::shared_ptr<PushConsumerImpl> consumer = consumer_.lock();
+  std::shared_ptr<PushConsumer> consumer = consumer_.lock();
   assert(consumer);
   request.mutable_group()->set_name(consumer->getGroupName());
   request.mutable_group()->set_resource_namespace(consumer->resourceNamespace());
@@ -195,6 +205,68 @@ void ProcessQueueImpl::wrapPopMessageRequest(absl::flat_hash_map<std::string, st
   auto fraction = invisible_time_ - std::chrono::duration_cast<std::chrono::seconds>(invisible_time_);
   int32_t nano_seconds = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count());
   request.mutable_invisible_duration()->set_nanos(nano_seconds);
+}
+
+void ProcessQueueImpl::pullMessage() {
+  auto consumer_client = consumer_.lock();
+  if (!consumer_client) {
+    return;
+  }
+
+  rmq::PullMessageRequest request;
+  absl::flat_hash_map<std::string, std::string> metadata;
+
+  Signature::sign(consumer_client.get(), metadata);
+  wrapPullMessageRequest(metadata, request);
+  syncIdleState();
+  SPDLOG_DEBUG("Try to pull message from {}", message_queue_.simpleName());
+
+  std::weak_ptr<ProcessQueue> ptr(shared_from_this());
+  auto callback = [ptr](const std::error_code& ec, const ReceiveMessageResult& result) {
+    auto process_queue = ptr.lock();
+    if (!process_queue) {
+      return;
+    }
+    process_queue->nextOffset(result.next_offset);
+    process_queue->callback()->onCompletion(ec, result);
+  };
+
+  client_manager_->pullMessage(
+      message_queue_.serviceAddress(), metadata, request,
+      absl::ToChronoMilliseconds(consumer_client->getLongPollingTimeout() + consumer_client->getIoTimeout()), callback);
+}
+
+void ProcessQueueImpl::wrapPullMessageRequest(absl::flat_hash_map<std::string, std::string>& metadata,
+                                              rmq::PullMessageRequest& request) {
+  std::shared_ptr<PushConsumer> consumer = consumer_.lock();
+  if (!consumer) {
+    return;
+  }
+
+  // Set group
+  request.mutable_group()->set_name(consumer->getGroupName());
+  request.mutable_group()->set_resource_namespace(consumer->resourceNamespace());
+
+  // Set partition
+  request.mutable_partition()->set_id(message_queue_.getQueueId());
+  request.mutable_partition()->mutable_topic()->set_name(message_queue_.getTopic());
+  request.mutable_partition()->mutable_topic()->set_resource_namespace(consumer->resourceNamespace());
+  request.mutable_partition()->mutable_broker()->set_name(message_queue_.getBrokerName());
+
+  // Set offset
+  request.set_offset(nextOffset());
+
+  // Set batch_size
+  request.set_batch_size(consumer->receiveBatchSize());
+
+  // Set fixed await_time
+  request.mutable_await_time()->set_seconds(15);
+
+  // Set filter_expression
+  wrapFilterExpression(request.mutable_filter_expression());
+
+  // Set client_id
+  request.set_client_id(consumer->clientId());
 }
 
 std::weak_ptr<PushConsumer> ProcessQueueImpl::getConsumer() {
