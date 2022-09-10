@@ -27,7 +27,7 @@
 ROCKETMQ_NAMESPACE_BEGIN
 
 class ConsumeTask;
-class PushConsumerImpl;
+class PushConsumer;
 
 class ConsumeMessageService {
 public:
@@ -64,7 +64,7 @@ public:
 
   virtual std::size_t maxDeliveryAttempt() = 0;
 
-  virtual std::weak_ptr<PushConsumerImpl> consumer() = 0;
+  virtual std::weak_ptr<PushConsumer> consumer() = 0;
 };
 
 using ConsumeMessageServiceWeakPtr = std::weak_ptr<ConsumeMessageService>;

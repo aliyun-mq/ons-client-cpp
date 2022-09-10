@@ -18,7 +18,7 @@
 #include "ConsumeTask.h"
 
 #include "MessageAccessor.h"
-#include "PushConsumerImpl.h"
+#include "PushConsumer.h"
 #include "rocketmq/ErrorCode.h"
 #include "rocketmq/Logger.h"
 #include "rocketmq/MQMessageExt.h"
@@ -133,7 +133,7 @@ void ConsumeTask::process() {
     return;
   }
 
-  std::shared_ptr<PushConsumerImpl> consumer = svc->consumer().lock();
+  std::shared_ptr<PushConsumer> consumer = svc->consumer().lock();
 
   auto self = shared_from_this();
 

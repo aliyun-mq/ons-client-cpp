@@ -34,7 +34,7 @@ class PushConsumerImpl;
 class ConsumeMessageServiceImpl : public ConsumeMessageService,
                                   public std::enable_shared_from_this<ConsumeMessageServiceImpl> {
 public:
-  ConsumeMessageServiceImpl(std::weak_ptr<PushConsumerImpl> consumer, int thread_count,
+  ConsumeMessageServiceImpl(std::weak_ptr<PushConsumer> consumer, int thread_count,
                             MessageListener* message_listener);
 
   ~ConsumeMessageServiceImpl() override = default;
@@ -71,14 +71,14 @@ public:
 
   std::size_t maxDeliveryAttempt() override;
 
-  std::weak_ptr<PushConsumerImpl> consumer() override;
+  std::weak_ptr<PushConsumer> consumer() override;
 
 protected:
   std::atomic<State> state_;
 
   int thread_count_;
   std::unique_ptr<ThreadPool> pool_;
-  std::weak_ptr<PushConsumerImpl> consumer_;
+  std::weak_ptr<PushConsumer> consumer_;
 
   MessageListener* message_listener_;
 };

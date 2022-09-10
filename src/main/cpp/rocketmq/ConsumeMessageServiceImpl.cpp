@@ -27,7 +27,7 @@
 
 ROCKETMQ_NAMESPACE_BEGIN
 
-ConsumeMessageServiceImpl::ConsumeMessageServiceImpl(std::weak_ptr<PushConsumerImpl> consumer, int thread_count,
+ConsumeMessageServiceImpl::ConsumeMessageServiceImpl(std::weak_ptr<PushConsumer> consumer, int thread_count,
                                                      MessageListener* message_listener)
     : state_(State::CREATED), thread_count_(thread_count), pool_(absl::make_unique<ThreadPoolImpl>(thread_count_)),
       consumer_(std::move(consumer)), message_listener_(message_listener) {
@@ -81,7 +81,7 @@ void ConsumeMessageServiceImpl::ack(const MQMessageExt& message, std::function<v
     return;
   }
 
-  std::weak_ptr<PushConsumerImpl> client(consumer_);
+  std::weak_ptr<PushConsumer> client(consumer_);
   const auto& topic = message.getTopic();
 
   const auto& message_id = message.getMsgId();
@@ -124,7 +124,7 @@ void ConsumeMessageServiceImpl::schedule(std::shared_ptr<ConsumeTask> task, std:
 }
 
 std::size_t ConsumeMessageServiceImpl::maxDeliveryAttempt() {
-  std::shared_ptr<PushConsumerImpl> consumer = consumer_.lock();
+  std::shared_ptr<PushConsumer> consumer = consumer_.lock();
   if (!consumer) {
     SPDLOG_WARN("The consumer has already destructed");
     return 0;
@@ -133,7 +133,7 @@ std::size_t ConsumeMessageServiceImpl::maxDeliveryAttempt() {
   return consumer->maxDeliveryAttempts();
 }
 
-std::weak_ptr<PushConsumerImpl> ConsumeMessageServiceImpl::consumer() {
+std::weak_ptr<PushConsumer> ConsumeMessageServiceImpl::consumer() {
   return consumer_;
 }
 
