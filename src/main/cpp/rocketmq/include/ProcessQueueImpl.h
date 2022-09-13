@@ -105,6 +105,32 @@ public:
     next_offset_ = value;
   }
 
+  void enqueueBroadcastMessages(std::vector<MQMessageExt> messages) override LOCKS_EXCLUDED(broadcast_messages_mtx_) {
+    absl::MutexLock lk(&broadcast_messages_mtx_);
+    for (const auto& message : messages) {
+      broadcast_messages_.push_back(message);
+    }
+  }
+
+  absl::optional<MQMessageExt> dequeBroadcastMessage() override LOCKS_EXCLUDED(broadcast_messages_mtx_) {
+    absl::MutexLock lk(&broadcast_messages_mtx_);
+    if (broadcast_messages_.empty()) {
+      return {};
+    }
+
+    MQMessageExt message(broadcast_messages_.front());
+    broadcast_messages_.pop_front();
+    return {message};
+  }
+
+  std::shared_ptr<BroadcastTask> broadcastTask() const override {
+    return broadcast_task_;
+  }
+
+  void broadcastTask(std::shared_ptr<BroadcastTask> task) override {
+    broadcast_task_ = std::move(task);
+  }
+
 private:
   MQMessageQueue message_queue_;
 
@@ -130,15 +156,20 @@ private:
    * @brief Quantity of the cached messages.
    *
    */
-  std::atomic<uint32_t> cached_message_quantity_;
+  std::atomic<uint32_t> cached_message_quantity_{0};
 
   /**
    * @brief Total body memory size of the cached messages.
    *
    */
-  std::atomic<uint64_t> cached_message_memory_;
+  std::atomic<uint64_t> cached_message_memory_{0};
 
   std::int64_t next_offset_{0};
+
+  std::deque<MQMessageExt> broadcast_messages_ GUARDED_BY(broadcast_messages_mtx_);
+  absl::Mutex broadcast_messages_mtx_;
+
+  std::shared_ptr<BroadcastTask> broadcast_task_;
 
   void popMessage();
   void wrapPopMessageRequest(absl::flat_hash_map<std::string, std::string>& metadata,

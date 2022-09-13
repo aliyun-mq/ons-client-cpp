@@ -19,6 +19,8 @@
 #include <cstdint>
 #include <memory>
 
+#include "absl/types/optional.h"
+
 #include "ConsumeMessageType.h"
 #include "FilterExpression.h"
 #include "rocketmq/MQMessageExt.h"
@@ -30,6 +32,8 @@ class PushConsumer;
 class ClientManager;
 
 class AsyncReceiveMessageCallback;
+
+class BroadcastTask;
 
 class ProcessQueue {
 public:
@@ -69,6 +73,12 @@ public:
 
   virtual std::int64_t nextOffset() const = 0;
   virtual void nextOffset(std::int64_t value) = 0;
+
+  virtual void enqueueBroadcastMessages(std::vector<MQMessageExt> messages) = 0;
+  virtual absl::optional<MQMessageExt> dequeBroadcastMessage() = 0;
+
+  virtual std::shared_ptr<BroadcastTask> broadcastTask() const = 0;
+  virtual void broadcastTask(std::shared_ptr<BroadcastTask> task) = 0;
 };
 
 using ProcessQueueWeakPtr = std::weak_ptr<ProcessQueue>;

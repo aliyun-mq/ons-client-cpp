@@ -82,7 +82,7 @@ bool ProcessQueueImpl::shouldThrottle() const {
   uint64_t memory_threshold = consumer->maxCachedMessageMemory();
   bool need_throttle = quantity >= quantity_threshold;
   if (need_throttle) {
-    SPDLOG_INFO("{}: Number of locally cached messages is {}, which exceeds threshold={}", simple_name_, quantity,
+    SPDLOG_WARN("{}: Number of locally cached messages is {}, which exceeds threshold={}", simple_name_, quantity,
                 quantity_threshold);
     return true;
   }
@@ -91,7 +91,7 @@ bool ProcessQueueImpl::shouldThrottle() const {
     uint64_t bytes = cached_message_memory_.load(std::memory_order_relaxed);
     need_throttle = bytes >= memory_threshold;
     if (need_throttle) {
-      SPDLOG_INFO("{}: Locally cached messages take {} bytes, which exceeds threshold={}", simple_name_, bytes,
+      SPDLOG_WARN("{}: Locally cached messages take {} bytes, which exceeds threshold={}", simple_name_, bytes,
                   memory_threshold);
       return true;
     }
@@ -156,9 +156,13 @@ void ProcessQueueImpl::release(uint64_t body_size) {
   if (!consumer) {
     return;
   }
+  auto prev = cached_message_quantity_.fetch_sub(1);
+  SPDLOG_DEBUG("Cached quantity changed from {} --> {}", prev,
+               cached_message_quantity_.load(std::memory_order_relaxed));
 
-  cached_message_quantity_.fetch_sub(1);
-  cached_message_memory_.fetch_sub(body_size);
+  auto prev_memory = cached_message_memory_.fetch_sub(body_size);
+  SPDLOG_DEBUG("Cached memory changed from {} --> {}", prev_memory,
+               cached_message_memory_.load(std::memory_order_relaxed));
 }
 
 void ProcessQueueImpl::wrapFilterExpression(rmq::FilterExpression* filter_expression) {
@@ -192,7 +196,10 @@ void ProcessQueueImpl::wrapPopMessageRequest(absl::flat_hash_map<std::string, st
   assert(consumer);
   request.mutable_group()->set_name(consumer->getGroupName());
   request.mutable_group()->set_resource_namespace(consumer->resourceNamespace());
-  // request.mutable_message_queue()
+
+  request.mutable_partition()->mutable_topic()->set_name(message_queue_.getTopic());
+  request.mutable_partition()->mutable_topic()->set_resource_namespace(consumer->resourceNamespace());
+  request.mutable_partition()->mutable_broker()->set_name(message_queue_.getBrokerName());
 
   wrapFilterExpression(request.mutable_filter_expression());
 

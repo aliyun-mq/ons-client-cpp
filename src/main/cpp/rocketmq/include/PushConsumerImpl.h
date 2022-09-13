@@ -42,8 +42,6 @@
 ROCKETMQ_NAMESPACE_BEGIN
 
 class ConsumeMessageService;
-class ConsumeFifoMessageService;
-class ConsumeStandardMessageService;
 
 class PushConsumerImpl : virtual public ClientImpl,
                          virtual public PushConsumer,

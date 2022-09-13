@@ -26,7 +26,8 @@ using namespace ons;
 
 int main(int argc, char* argv[]) {
   rocketmq::Logger& logger = rocketmq::getLogger();
-  logger.setLevel(rocketmq::Level::Debug);
+  logger.setLevel(rocketmq::Level::Warn);
+  logger.setConsoleLevel(rocketmq::Level::Warn);
   logger.init();
 
   std::cout << "=======Before sending messages=======" << std::endl;
@@ -48,11 +49,12 @@ int main(int argc, char* argv[]) {
   //                             Send with exception                                                //
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   auto start = std::chrono::system_clock::now();
-  int count = 32;
+  int count = 3200;
   for (int i = 0; i < count; ++i) {
     try {
       SendResultONS sendResult = producer->send(msg);
       std::cout << "Message ID: " << sendResult.getMessageId() << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     } catch (ONSClientException& e) {
       std::cout << "ErrorCode: " << e.what() << std::endl;
     }

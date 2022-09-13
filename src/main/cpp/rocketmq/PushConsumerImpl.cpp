@@ -29,7 +29,6 @@
 #include "ProcessQueueImpl.h"
 #include "RpcClient.h"
 #include "Signature.h"
-#include "rocketmq/MQClientException.h"
 #include "rocketmq/MessageListener.h"
 #include "rocketmq/MessageModel.h"
 #include "spdlog/spdlog.h"

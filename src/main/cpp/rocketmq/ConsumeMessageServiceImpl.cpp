@@ -16,14 +16,15 @@
  */
 #include "ConsumeMessageServiceImpl.h"
 
+#include "BroadcastTask.h"
 #include "ConsumeTask.h"
 #include "PushConsumerImpl.h"
 #include "ThreadPoolImpl.h"
 #include "rocketmq/ErrorCode.h"
-#include "rocketmq/Logger.h"
 #include "rocketmq/MQMessageExt.h"
 #include "rocketmq/MessageListener.h"
 #include "rocketmq/MessageModel.h"
+#include "rocketmq/Logger.h"
 #include "spdlog/spdlog.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
@@ -55,11 +56,24 @@ void ConsumeMessageServiceImpl::dispatch(std::shared_ptr<ProcessQueue> process_q
     return;
   }
 
+  process_queue->accountCache(messages);
+
   auto message_model = consumer->messageModel();
 
   if (MessageListenerType::FIFO == message_listener_->listenerType()) {
     switch (message_model) {
       case MessageModel::BROADCASTING: {
+        process_queue->enqueueBroadcastMessages(std::move(messages));
+
+        if (!process_queue->broadcastTask()) {
+          auto task = std::make_shared<BroadcastTask>(process_queue, shared_from_this());
+          process_queue->broadcastTask(task);
+        }
+
+        auto consume_task = process_queue->broadcastTask();
+        if (!consume_task->runnable()) {
+          pool_->submit([consume_task]() { consume_task->process(); });
+        }
         break;
       }
       case MessageModel::CLUSTERING: {
@@ -71,7 +85,7 @@ void ConsumeMessageServiceImpl::dispatch(std::shared_ptr<ProcessQueue> process_q
     return;
   }
 
-  for (auto message : messages) {
+  for (const auto& message : messages) {
     auto consume_task = std::make_shared<ConsumeTask>(shared_from_this(), process_queue, message);
     pool_->submit([consume_task]() { consume_task->process(); });
   }

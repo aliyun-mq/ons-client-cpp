@@ -30,13 +30,13 @@ ROCKETMQ_NAMESPACE_BEGIN
 
 ConsumeTask::ConsumeTask(ConsumeMessageServiceWeakPtr service, std::weak_ptr<ProcessQueue> process_queue,
                          MQMessageExt message)
-    : service_(service), process_queue_(std::move(process_queue)) {
-  messages_.emplace_back(message);
+    : service_(std::move(service)), process_queue_(std::move(process_queue)) {
+  messages_.emplace_back(std::move(message));
 }
 
 ConsumeTask::ConsumeTask(ConsumeMessageServiceWeakPtr service, std::weak_ptr<ProcessQueue> process_queue,
                          std::vector<MQMessageExt> messages)
-    : service_(service), process_queue_(std::move(process_queue)), messages_(std::move(messages)) {
+    : service_(std::move(service)), process_queue_(std::move(process_queue)), messages_(std::move(messages)) {
   fifo_ = messages_.size() > 1;
 }
 
@@ -138,7 +138,6 @@ void ConsumeTask::process() {
 
   auto message_model = consumer->messageModel();
   if (MessageModel::BROADCASTING == message_model) {
-    
 
     return;
   }
