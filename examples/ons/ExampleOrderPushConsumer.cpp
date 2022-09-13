@@ -36,12 +36,15 @@ public:
 
 int main(int argc, char* argv[]) {
   rocketmq::Logger& logger = rocketmq::getLogger();
-  logger.setLevel(rocketmq::Level::Debug);
+  logger.setLevel(rocketmq::Level::Warn);
+  logger.setConsoleLevel(rocketmq::Level::Warn);
   logger.init();
 
   std::cout << "=======Before consuming messages=======" << std::endl;
   ONSFactoryProperty factory_property;
   factory_property.setFactoryProperty(ONSFactoryProperty::GroupId, "GID_sdk_fifo");
+
+//  factory_property.setFactoryProperty(ONSFactoryProperty::MessageModel, "BROADCASTING");
 
   OrderConsumer* consumer = ONSFactory::getInstance()->createOrderConsumer(factory_property);
   const char* topic = "sdk_fifo";

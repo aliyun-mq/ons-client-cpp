@@ -45,15 +45,11 @@ public:
 
   virtual int32_t maxDeliveryAttempts() const = 0;
 
-  virtual void updateOffset(const MQMessageQueue& message_queue, int64_t offset) = 0;
-
   virtual void nack(const MQMessageExt& message, const std::function<void(const std::error_code&)>& callback) = 0;
 
   virtual bool receiveMessage(const MQMessageQueue& message_queue, const FilterExpression& filter_expression) = 0;
 
   virtual MessageListener* messageListener() = 0;
-
-  virtual void setOffsetStore(std::unique_ptr<OffsetStore> offset_store) = 0;
 };
 
 using PushConsumerSharedPtr = std::shared_ptr<PushConsumer>;

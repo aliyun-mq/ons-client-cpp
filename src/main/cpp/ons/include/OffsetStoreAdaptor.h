@@ -11,7 +11,7 @@ ROCKETMQ_NAMESPACE_BEGIN
 
 class OffsetStoreAdaptor : public ROCKETMQ_NAMESPACE::OffsetStore {
 public:
-  OffsetStoreAdaptor(std::unique_ptr<ONS_NAMESPACE::OffsetStore> store) : store_(std::move(store)) {
+  explicit OffsetStoreAdaptor(std::unique_ptr<ONS_NAMESPACE::OffsetStore> store) : store_(std::move(store)) {
   }
 
   void load() override {

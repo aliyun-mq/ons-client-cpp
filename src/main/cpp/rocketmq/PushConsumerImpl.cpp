@@ -351,9 +351,9 @@ bool PushConsumerImpl::receiveMessage(const MQMessageQueue& message_queue, const
 
   switch (message_model_) {
     case MessageModel::BROADCASTING: {
-      int64_t offset = -1;
-      if (!offset_store_ || !offset_store_->readOffset(message_queue, offset)) {
-        // Query latest offset from server.
+      int64_t offset = process_queue_ptr->nextOffset();
+      if (offset < 0) {
+        // Query the latest offset from server.
         QueryOffsetRequest request;
         request.mutable_partition()->mutable_topic()->set_resource_namespace(resource_namespace_);
         request.mutable_partition()->mutable_topic()->set_name(message_queue.getTopic());
@@ -370,10 +370,13 @@ bool PushConsumerImpl::receiveMessage(const MQMessageQueue& message_queue, const
           } else {
             assert(response.offset() >= 0);
             process_queue_ptr->nextOffset(response.offset());
+            SPDLOG_INFO("Max offset of {} is: {}", process_queue_ptr->messageQueue().simpleName(), response.offset());
             process_queue_ptr->receiveMessage();
           }
         };
         client_manager_->queryOffset(broker_host, metadata, request, absl::ToChronoMilliseconds(io_timeout_), callback);
+      } else {
+        process_queue_ptr->receiveMessage();
       }
       break;
     }

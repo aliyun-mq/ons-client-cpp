@@ -164,7 +164,7 @@ private:
    */
   std::atomic<uint64_t> cached_message_memory_{0};
 
-  std::int64_t next_offset_{0};
+  std::int64_t next_offset_{-1};
 
   std::deque<MQMessageExt> broadcast_messages_ GUARDED_BY(broadcast_messages_mtx_);
   absl::Mutex broadcast_messages_mtx_;

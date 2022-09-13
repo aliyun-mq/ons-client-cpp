@@ -35,7 +35,11 @@ public:
 
   void setFactoryProperty(const std::string& key, const std::string& value) {
     validate(key, value);
-    property_map_.insert({key, value});
+    std::pair<std::map<std::string, std::string>::iterator, bool> result = property_map_.insert({key, value});
+    if (!result.second) {
+      property_map_.erase(key);
+      property_map_.insert({key, value});
+    }
   }
 
   std::map<std::string, std::string> getFactoryProperties() const;

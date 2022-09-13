@@ -154,16 +154,6 @@ public:
     message_model_ = message_model;
   }
 
-  void setOffsetStore(std::unique_ptr<OffsetStore> offset_store) override {
-    offset_store_ = std::move(offset_store);
-  }
-
-  void updateOffset(const MQMessageQueue& message_queue, int64_t offset) override {
-    if (offset_store_) {
-      offset_store_->updateOffset(message_queue, offset);
-    }
-  }
-
   /**
    * Max number of messages that may be cached per queue before applying
    * back-pressure.
