@@ -23,16 +23,15 @@
 #include <system_error>
 
 #include "AsyncReceiveMessageCallback.h"
-#include "ConsumeFifoMessageService.h"
-#include "ConsumeStandardMessageService.h"
+#include "ConsumeMessageServiceImpl.h"
 #include "MessageAccessor.h"
 #include "MixAll.h"
 #include "ProcessQueueImpl.h"
 #include "RpcClient.h"
 #include "Signature.h"
-#include "rocketmq/MQClientException.h"
 #include "rocketmq/MessageListener.h"
 #include "rocketmq/MessageModel.h"
+#include "spdlog/spdlog.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
@@ -63,26 +62,10 @@ void PushConsumerImpl::start() {
 
   fetchRoutes();
 
-  if (message_listener_->listenerType() == MessageListenerType::FIFO) {
-    SPDLOG_INFO("start orderly consume service: {}", group_name_);
-    consume_message_service_ =
-        std::make_shared<ConsumeFifoMessageService>(shared_from_this(), consume_thread_pool_size_, message_listener_);
-    consume_batch_size_ = 1;
-  } else {
-    // For backward compatibility, by default, ConsumeMessageConcurrentlyService is assumed.
-    SPDLOG_INFO("start concurrently consume service: {}", group_name_);
-    consume_message_service_ = std::make_shared<ConsumeStandardMessageService>(
-        shared_from_this(), consume_thread_pool_size_, message_listener_);
-  }
+  consume_message_service_ =
+      std::make_shared<ConsumeMessageServiceImpl>(shared_from_this(), consume_thread_pool_size_, message_listener_);
   consume_message_service_->start();
-
-  {
-    // Set consumer throttling
-    absl::MutexLock lock(&throttle_table_mtx_);
-    for (const auto& item : throttle_table_) {
-      consume_message_service_->throttle(item.first, item.second);
-    }
-  }
+  SPDLOG_INFO("ConsumeMessageService started");
 
   // Heartbeat depends on initialization of consume-message-service
   heartbeat();
@@ -509,24 +492,6 @@ std::size_t PushConsumerImpl::getProcessQueueTableSize() {
   return process_queue_table_.size();
 }
 
-void PushConsumerImpl::setThrottle(const std::string& topic, uint32_t threshold) {
-  absl::MutexLock lock(&throttle_table_mtx_);
-  throttle_table_.emplace(topic, threshold);
-  // If consumer has started, update it dynamically.
-  if (getConsumeMessageService()) {
-    getConsumeMessageService()->throttle(topic, threshold);
-  }
-}
-
-void PushConsumerImpl::iterateProcessQueue(const std::function<void(ProcessQueueSharedPtr)>& callback) {
-  absl::MutexLock lock(&process_queue_table_mtx_);
-  for (const auto& item : process_queue_table_) {
-    if (item.second->hasPendingMessages()) {
-      callback(item.second);
-    }
-  }
-}
-
 void PushConsumerImpl::fetchRoutes() {
   std::vector<std::string> topics;
   {
@@ -613,8 +578,8 @@ void PushConsumerImpl::prepareHeartbeatData(HeartbeatRequest& request) {
     }
   }
 
-  assert(consume_message_service_);
-  switch (consume_message_service_->messageListenerType()) {
+  assert(message_listener_);
+  switch (message_listener_->listenerType()) {
     case MessageListenerType::FIFO: {
       // TODO: Use enumeration in the protocol buffer specification?
       request.set_fifo_flag(true);

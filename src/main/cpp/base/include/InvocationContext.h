@@ -27,11 +27,11 @@
 #include "grpcpp/impl/codegen/async_stream.h"
 #include "grpcpp/impl/codegen/async_unary_call.h"
 
-#include "rocketmq/Logger.h"
-#include "spdlog/spdlog.h"
 #include "MetadataConstants.h"
 #include "UniqueIdGenerator.h"
+#include "rocketmq/Logger.h"
 #include "rocketmq/RocketMQ.h"
+#include "spdlog/spdlog.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
@@ -89,8 +89,10 @@ struct InvocationContext : public BaseInvocationContext {
     }
 
     // Log response from server
-    SPDLOG_DEBUG("TargetHost={},{}={},TaskName={}: {}",
-                 remote_address, MetadataConstants::REQUEST_ID_KEY, request_id_, task_name, response.DebugString());
+    if (status.ok()) {
+      SPDLOG_DEBUG("TargetHost={},{}={},TaskName={}: {}", remote_address, MetadataConstants::REQUEST_ID_KEY,
+                   request_id_, task_name, response.DebugString());
+    }
 
     try {
       if (callback) {

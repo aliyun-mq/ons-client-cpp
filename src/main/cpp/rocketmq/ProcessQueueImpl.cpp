@@ -22,13 +22,16 @@
 #include <system_error>
 #include <utility>
 
+#include "AsyncReceiveMessageCallback.h"
 #include "ClientManagerImpl.h"
 #include "MetadataConstants.h"
 #include "Protocol.h"
-#include "PushConsumer.h"
+#include "PushConsumerImpl.h"
+#include "ReceiveMessageResult.h"
 #include "Signature.h"
+#include "apache/rocketmq/v1/service.pb.h"
+#include "rocketmq/MQMessageExt.h"
 #include "rocketmq/MessageListener.h"
-#include "rocketmq/MessageModel.h"
 
 using namespace std::chrono;
 
@@ -47,8 +50,8 @@ ProcessQueueImpl::~ProcessQueueImpl() {
   SPDLOG_INFO("ProcessQueue={} should have been re-balanced away, thus, is destructed", simpleName());
 }
 
-void ProcessQueueImpl::callback(std::shared_ptr<ReceiveMessageCallback> callback) {
-  receive_callback_ = std::move(callback);
+void ProcessQueueImpl::callback(std::shared_ptr<AsyncReceiveMessageCallback> callback) {
+  receive_callback_ = callback;
 }
 
 bool ProcessQueueImpl::expired() const {
@@ -58,6 +61,14 @@ bool ProcessQueueImpl::expired() const {
     return true;
   }
   return false;
+}
+
+std::uint64_t ProcessQueueImpl::cachedMessageQuantity() const {
+  return cached_message_quantity_.load(std::memory_order_relaxed);
+}
+
+std::uint64_t ProcessQueueImpl::cachedMessageMemory() const {
+  return cached_message_memory_.load(std::memory_order_relaxed);
 }
 
 bool ProcessQueueImpl::shouldThrottle() const {
@@ -71,7 +82,7 @@ bool ProcessQueueImpl::shouldThrottle() const {
   uint64_t memory_threshold = consumer->maxCachedMessageMemory();
   bool need_throttle = quantity >= quantity_threshold;
   if (need_throttle) {
-    SPDLOG_INFO("{}: Number of locally cached messages is {}, which exceeds threshold={}", simple_name_, quantity,
+    SPDLOG_WARN("{}: Number of locally cached messages is {}, which exceeds threshold={}", simple_name_, quantity,
                 quantity_threshold);
     return true;
   }
@@ -80,7 +91,7 @@ bool ProcessQueueImpl::shouldThrottle() const {
     uint64_t bytes = cached_message_memory_.load(std::memory_order_relaxed);
     need_throttle = bytes >= memory_threshold;
     if (need_throttle) {
-      SPDLOG_INFO("{}: Locally cached messages take {} bytes, which exceeds threshold={}", simple_name_, bytes,
+      SPDLOG_WARN("{}: Locally cached messages take {} bytes, which exceeds threshold={}", simple_name_, bytes,
                   memory_threshold);
       return true;
     }
@@ -93,8 +104,8 @@ void ProcessQueueImpl::receiveMessage() {
   if (!consumer) {
     return;
   }
-
-  switch (consumer->messageModel()) {
+  auto message_model = consumer->messageModel();
+  switch (message_model) {
     case MessageModel::CLUSTERING: {
       popMessage();
       break;
@@ -117,129 +128,41 @@ void ProcessQueueImpl::popMessage() {
   wrapPopMessageRequest(metadata, request);
   syncIdleState();
   SPDLOG_DEBUG("Try to pop message from {}", message_queue_.simpleName());
-  client_manager_->receiveMessage(message_queue_.serviceAddress(), metadata, request,
-                                  absl::ToChronoMilliseconds(consumer_client->getLongPollingTimeout()),
-                                  receive_callback_);
+
+  client_manager_->receiveMessage(
+      message_queue_.serviceAddress(), metadata, request,
+      absl::ToChronoMilliseconds(consumer_client->getLongPollingTimeout() + consumer_client->getIoTimeout()),
+      receive_callback_);
 }
 
-void ProcessQueueImpl::pullMessage() {
-  rmq::PullMessageRequest request;
-  absl::flat_hash_map<std::string, std::string> metadata;
-  auto consumer = consumer_.lock();
-  if (!consumer) {
-    SPDLOG_INFO("Owner consumer has destructed");
-    return;
-  }
-
-  Signature::sign(consumer.get(), metadata);
-  wrapPullMessageRequest(request);
-  syncIdleState();
-  SPDLOG_DEBUG("Try to pull message from {}", message_queue_.simpleName());
-
-  auto timeout = consumer->getLongPollingTimeout();
-
-  auto callback = [this](const std::error_code& ec, const ReceiveMessageResult& result) {
-    receive_callback_->onCompletion(ec, result);
-  };
-
-  client_manager_->pullMessage(message_queue_.serviceAddress(), metadata, request, absl::ToChronoMilliseconds(timeout),
-                               callback);
-}
-
-bool ProcessQueueImpl::hasPendingMessages() const {
-  absl::MutexLock lk(&messages_mtx_);
-  return !cached_messages_.empty();
-}
-
-void ProcessQueueImpl::cacheMessages(const std::vector<MQMessageExt>& messages) {
+void ProcessQueueImpl::accountCache(const std::vector<MQMessageExt>& messages) {
   auto consumer = consumer_.lock();
   if (!consumer) {
     return;
   }
 
-  {
-    absl::MutexLock messages_lock_guard(&messages_mtx_);
-    absl::MutexLock offsets_lock_guard(&offsets_mtx_);
-    for (const auto& message : messages) {
-      const std::string& msg_id = message.getMsgId();
-      if (!filter_expression_.accept(message)) {
-        const std::string& topic = message.getTopic();
-        auto callback = [topic, msg_id](const std::error_code& ec) {
-          if (ec) {
-            SPDLOG_WARN(
-                "Failed to ack message[Topic={}, MsgId={}] directly as it fails to pass filter expression. Cause: {}",
-                topic, msg_id, ec.message());
-          } else {
-            SPDLOG_DEBUG("Ack message[Topic={}, MsgId={}] directly as it fails to pass filter expression", topic,
-                         msg_id);
-          }
-        };
-        consumer->ack(message, callback);
-        continue;
-      }
-      cached_messages_.emplace_back(message);
-      cached_message_quantity_.fetch_add(1, std::memory_order_relaxed);
-      cached_message_memory_.fetch_add(message.getBody().size(), std::memory_order_relaxed);
-      if (MessageModel::BROADCASTING == consumer->messageModel()) {
-        if (offsets_.size() == 1 && offsets_.begin()->released_) {
-          int64_t previously_released = offsets_.begin()->offset_;
-          offsets_.erase(OffsetRecord(previously_released));
-        }
-        offsets_.emplace(message.getQueueOffset());
-      }
-    }
+  for (const auto& message : messages) {
+    cached_message_quantity_.fetch_add(1, std::memory_order_relaxed);
+    cached_message_memory_.fetch_add(message.getBody().size(), std::memory_order_relaxed);
   }
+
+  SPDLOG_DEBUG("Cache of process-queue={} has {} messages, body of them taking up {} bytes", simple_name_,
+               cached_message_quantity_.load(std::memory_order_relaxed),
+               cached_message_memory_.load(std::memory_order_relaxed));
 }
 
-bool ProcessQueueImpl::take(uint32_t batch_size, std::vector<MQMessageExt>& messages) {
-  absl::MutexLock lock(&messages_mtx_);
-  if (cached_messages_.empty()) {
-    return false;
-  }
-
-  for (auto it = cached_messages_.begin(); it != cached_messages_.end();) {
-    if (0 == batch_size--) {
-      break;
-    }
-
-    messages.push_back(*it);
-    it = cached_messages_.erase(it);
-  }
-  return !cached_messages_.empty();
-}
-
-bool ProcessQueueImpl::committedOffset(int64_t& offset) {
-  absl::MutexLock lk(&offsets_mtx_);
-  if (offsets_.empty()) {
-    return false;
-  }
-  if (offsets_.begin()->released_) {
-    offset = offsets_.begin()->offset_ + 1;
-  } else {
-    offset = offsets_.begin()->offset_;
-  }
-  return true;
-}
-
-void ProcessQueueImpl::release(uint64_t body_size, int64_t offset) {
+void ProcessQueueImpl::release(uint64_t body_size) {
   auto consumer = consumer_.lock();
   if (!consumer) {
     return;
   }
+  auto prev = cached_message_quantity_.fetch_sub(1);
+  SPDLOG_DEBUG("Cached quantity changed from {} --> {}", prev,
+               cached_message_quantity_.load(std::memory_order_relaxed));
 
-  cached_message_quantity_.fetch_sub(1);
-  cached_message_memory_.fetch_sub(body_size);
-
-  if (MessageModel::BROADCASTING == consumer->messageModel()) {
-    absl::MutexLock lk(&offsets_mtx_);
-    if (offsets_.size() > 1) {
-      offsets_.erase(OffsetRecord(offset));
-    } else {
-      assert(offsets_.begin()->offset_ == offset);
-      offsets_.erase(OffsetRecord(offset));
-      offsets_.emplace(OffsetRecord(offset, true));
-    }
-  }
+  auto prev_memory = cached_message_memory_.fetch_sub(body_size);
+  SPDLOG_DEBUG("Cached memory changed from {} --> {}", prev_memory,
+               cached_message_memory_.load(std::memory_order_relaxed));
 }
 
 void ProcessQueueImpl::wrapFilterExpression(rmq::FilterExpression* filter_expression) {
@@ -271,32 +194,17 @@ void ProcessQueueImpl::wrapPopMessageRequest(absl::flat_hash_map<std::string, st
                                              rmq::ReceiveMessageRequest& request) {
   std::shared_ptr<PushConsumer> consumer = consumer_.lock();
   assert(consumer);
-  request.set_client_id(consumer->clientId());
   request.mutable_group()->set_name(consumer->getGroupName());
   request.mutable_group()->set_resource_namespace(consumer->resourceNamespace());
-  request.mutable_partition()->set_id(message_queue_.getQueueId());
-  request.mutable_partition()->mutable_broker()->set_name(message_queue_.getBrokerName());
+
   request.mutable_partition()->mutable_topic()->set_name(message_queue_.getTopic());
   request.mutable_partition()->mutable_topic()->set_resource_namespace(consumer->resourceNamespace());
+  request.mutable_partition()->mutable_broker()->set_name(message_queue_.getBrokerName());
 
   wrapFilterExpression(request.mutable_filter_expression());
 
-  switch (consumer->getConsumeMessageService()->messageListenerType()) {
-    case MessageListenerType::STANDARD: {
-      request.set_fifo_flag(false);
-      break;
-    }
-    case MessageListenerType::FIFO: {
-      request.set_fifo_flag(true);
-      break;
-    }
-  }
-
   // Batch size
   request.set_batch_size(consumer->receiveBatchSize());
-
-  // Consume policy
-  request.set_consume_policy(rmq::ConsumePolicy::RESUME);
 
   // Set invisible time
   request.mutable_invisible_duration()->set_seconds(
@@ -306,20 +214,66 @@ void ProcessQueueImpl::wrapPopMessageRequest(absl::flat_hash_map<std::string, st
   request.mutable_invisible_duration()->set_nanos(nano_seconds);
 }
 
-void ProcessQueueImpl::wrapPullMessageRequest(rmq::PullMessageRequest& request) {
+void ProcessQueueImpl::pullMessage() {
+  auto consumer_client = consumer_.lock();
+  if (!consumer_client) {
+    return;
+  }
+
+  rmq::PullMessageRequest request;
+  absl::flat_hash_map<std::string, std::string> metadata;
+
+  Signature::sign(consumer_client.get(), metadata);
+  wrapPullMessageRequest(metadata, request);
+  syncIdleState();
+  SPDLOG_DEBUG("Try to pull message from {}", message_queue_.simpleName());
+
+  std::weak_ptr<ProcessQueue> ptr(shared_from_this());
+  auto callback = [ptr](const std::error_code& ec, const ReceiveMessageResult& result) {
+    auto process_queue = ptr.lock();
+    if (!process_queue) {
+      return;
+    }
+    process_queue->nextOffset(result.next_offset);
+    process_queue->callback()->onCompletion(ec, result);
+  };
+
+  client_manager_->pullMessage(
+      message_queue_.serviceAddress(), metadata, request,
+      absl::ToChronoMilliseconds(consumer_client->getLongPollingTimeout() + consumer_client->getIoTimeout()), callback);
+}
+
+void ProcessQueueImpl::wrapPullMessageRequest(absl::flat_hash_map<std::string, std::string>& metadata,
+                                              rmq::PullMessageRequest& request) {
   std::shared_ptr<PushConsumer> consumer = consumer_.lock();
-  assert(consumer);
-  request.set_client_id(consumer->clientId());
+  if (!consumer) {
+    return;
+  }
+
+  // Set group
   request.mutable_group()->set_name(consumer->getGroupName());
   request.mutable_group()->set_resource_namespace(consumer->resourceNamespace());
+
+  // Set partition
   request.mutable_partition()->set_id(message_queue_.getQueueId());
-  request.mutable_partition()->mutable_broker()->set_name(message_queue_.getBrokerName());
   request.mutable_partition()->mutable_topic()->set_name(message_queue_.getTopic());
   request.mutable_partition()->mutable_topic()->set_resource_namespace(consumer->resourceNamespace());
-  request.set_offset(next_offset_);
+  request.mutable_partition()->mutable_broker()->set_name(message_queue_.getBrokerName());
+
+  // Set offset
+  request.set_offset(nextOffset());
+
+  // Set batch_size
   request.set_batch_size(consumer->receiveBatchSize());
 
+  // Set fixed await_time
+  request.mutable_await_time()->set_seconds(15);
+
+  // Set filter_expression
   wrapFilterExpression(request.mutable_filter_expression());
+
+  // Set client_id
+  request.set_client_id(consumer->clientId());
 }
 
 std::weak_ptr<PushConsumer> ProcessQueueImpl::getConsumer() {
@@ -328,10 +282,6 @@ std::weak_ptr<PushConsumer> ProcessQueueImpl::getConsumer() {
 
 std::shared_ptr<ClientManager> ProcessQueueImpl::getClientManager() {
   return client_manager_;
-}
-
-MQMessageQueue ProcessQueueImpl::getMQMessageQueue() {
-  return message_queue_;
 }
 
 const FilterExpression& ProcessQueueImpl::getFilterExpression() const {

@@ -44,11 +44,13 @@ public:
 
 int main(int argc, char* argv[]) {
   rocketmq::Logger& logger = rocketmq::getLogger();
-  logger.setLevel(rocketmq::Level::Info);
+  logger.setLevel(rocketmq::Level::Warn);
+  logger.setConsoleLevel(rocketmq::Level::Warn);
   logger.init();
 
   std::cout << "=======Before consuming messages=======" << std::endl;
   ONSFactoryProperty factory_property;
+  factory_property.setFactoryProperty(ONSFactoryProperty::GroupId, "GID_sdk");
 
   PushConsumer* consumer = ONSFactory::getInstance()->createPushConsumer(factory_property);
   const char* topic = "sdk_standard";

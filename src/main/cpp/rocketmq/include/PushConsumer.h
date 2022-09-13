@@ -33,8 +33,6 @@ class PushConsumer : virtual public Consumer {
 public:
   ~PushConsumer() override = default;
 
-  virtual void iterateProcessQueue(const std::function<void(ProcessQueueSharedPtr)>& cb) = 0;
-
   virtual MessageModel messageModel() const = 0;
 
   virtual void ack(const MQMessageExt& msg, const std::function<void(const std::error_code&)>& callback) = 0;

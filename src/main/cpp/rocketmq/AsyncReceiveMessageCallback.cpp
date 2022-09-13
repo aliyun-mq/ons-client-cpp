@@ -22,6 +22,7 @@
 #include "ConsumeMessageType.h"
 #include "LoggerImpl.h"
 #include "PushConsumer.h"
+#include "rocketmq/MessageListener.h"
 
 ROCKETMQ_NAMESPACE_BEGIN
 
@@ -57,8 +58,7 @@ void AsyncReceiveMessageCallback::onCompletion(const std::error_code& ec, const 
 
   SPDLOG_DEBUG("Received {} messages from broker[host={}] for queue={}", result.messages.size(), result.source_host,
                process_queue->simpleName());
-  process_queue->cacheMessages(result.messages);
-  impl->getConsumeMessageService()->signalDispatcher();
+  impl->getConsumeMessageService()->dispatch(process_queue, result.messages);
   checkThrottleThenReceive();
 }
 
@@ -115,7 +115,7 @@ void AsyncReceiveMessageCallback::receiveMessageImmediately() {
                 process_queue_shared_ptr->simpleName());
     return;
   }
-  impl->receiveMessage(process_queue_shared_ptr->getMQMessageQueue(), process_queue_shared_ptr->getFilterExpression());
+  impl->receiveMessage(process_queue_shared_ptr->messageQueue(), process_queue_shared_ptr->getFilterExpression());
 }
 
 ROCKETMQ_NAMESPACE_END
