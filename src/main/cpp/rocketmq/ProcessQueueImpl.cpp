@@ -29,6 +29,7 @@
 #include "PushConsumerImpl.h"
 #include "ReceiveMessageResult.h"
 #include "Signature.h"
+#include "apache/rocketmq/v1/definition.pb.h"
 #include "apache/rocketmq/v1/service.pb.h"
 #include "rocketmq/MQMessageExt.h"
 #include "rocketmq/MessageListener.h"
@@ -194,14 +195,28 @@ void ProcessQueueImpl::wrapPopMessageRequest(absl::flat_hash_map<std::string, st
                                              rmq::ReceiveMessageRequest& request) {
   std::shared_ptr<PushConsumer> consumer = consumer_.lock();
   assert(consumer);
+
+  // group
   request.mutable_group()->set_name(consumer->getGroupName());
   request.mutable_group()->set_resource_namespace(consumer->resourceNamespace());
 
+  // client-id
+  request.set_client_id(consumer->clientId());
+
+  // parititon
   request.mutable_partition()->mutable_topic()->set_name(message_queue_.getTopic());
   request.mutable_partition()->mutable_topic()->set_resource_namespace(consumer->resourceNamespace());
   request.mutable_partition()->mutable_broker()->set_name(message_queue_.getBrokerName());
 
+  // Filter-expression
   wrapFilterExpression(request.mutable_filter_expression());
+
+  // Consume Policy
+  request.set_consume_policy(rmq::ConsumePolicy::RESUME);
+
+  // initialization_timestamp
+
+  //
 
   // Batch size
   request.set_batch_size(consumer->receiveBatchSize());
@@ -212,6 +227,23 @@ void ProcessQueueImpl::wrapPopMessageRequest(absl::flat_hash_map<std::string, st
   auto fraction = invisible_time_ - std::chrono::duration_cast<std::chrono::seconds>(invisible_time_);
   int32_t nano_seconds = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count());
   request.mutable_invisible_duration()->set_nanos(nano_seconds);
+
+  // await_time
+  request.mutable_await_time()->set_seconds(15);
+  request.mutable_await_time()->set_nanos(0);
+
+  // fifo_flag
+  auto listener = consumer->messageListener();
+  switch (listener->listenerType()) {
+    case MessageListenerType::FIFO: {
+      request.set_fifo_flag(true);
+      break;
+    }
+    case MessageListenerType::STANDARD: {
+      request.set_fifo_flag(false);
+      break;
+    }
+  }
 }
 
 void ProcessQueueImpl::pullMessage() {
