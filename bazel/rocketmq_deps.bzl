@@ -73,19 +73,21 @@ def rocketmq_deps():
     if "com_google_absl" not in native.existing_rules():
         http_archive(
             name = "com_google_absl",
-            sha256 = "59b862f50e710277f8ede96f083a5bb8d7c9595376146838b9580be90374ee1f",
-            strip_prefix = "abseil-cpp-20210324.2",
+            sha256 = "91ac87d30cc6d79f9ab974c51874a704de9c2647c40f6932597329a282217ba8",
+            strip_prefix = "abseil-cpp-20220623.1",
             urls = [
-                "https://github.com/abseil/abseil-cpp/archive/refs/tags/20210324.2.tar.gz",
+                "https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.1.tar.gz",
             ],
         )
 
     if "com_github_grpc_grpc" not in native.existing_rules():
         http_archive(
             name = "com_github_grpc_grpc",
-            strip_prefix = "grpc-1.39.0",
-            sha256 = "b16992aa1c949c10d5d5ce2a62f9d99fa7de77da2943e643fb66dcaf075826d6",
-            urls = ["https://github.com/grpc/grpc/archive/v1.39.0.tar.gz"],
+            strip_prefix = "grpc-1.48.1",
+            sha256 = "320366665d19027cda87b2368c03939006a37e0388bfd1091c8d2a96fbc93bd8",
+            urls = [
+                "https://github.com/grpc/grpc/archive/refs/tags/v1.48.1.tar.gz"
+            ],
         )
 
     if "io_opentelemetry_cpp" not in native.existing_rules():
