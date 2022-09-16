@@ -9,6 +9,16 @@ def rocketmq_deps():
         actual = "@com_github_opentelemetry//api:api",
     )
 
+    maybe(
+        http_archive,
+        name = "rules_cc",
+        strip_prefix = "rules_cc-0.0.3-pre1",
+        urls = [
+            "https://github.com/lizhanhui/rules_cc/archive/refs/tags/0.0.3-pre1.tar.gz"
+        ],
+        sha256 = "3c3bb134d386189976424f5d5c68cc0872ab0cfdb24149590098650448f35022",
+    )
+
     if "com_google_googletest" not in native.existing_rules():
          http_archive(
              name = "com_google_googletest",

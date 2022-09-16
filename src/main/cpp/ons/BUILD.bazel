@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_cc//examples:experimental_cc_shared_library.bzl", "cc_shared_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,16 +36,34 @@ cc_library(
     ],
 )
 
-
-cc_binary(
-    name = "libons.so",
-    linkshared = True,
-    linkstatic = True,
-    deps = [
+cc_shared_library(
+    name = "ons",
+    roots = [
         ":ons_library",
+    ],
+    static_deps = [
+        "@//:__subpackages__",
+        "@com_github_grpc_grpc//:__subpackages__",
+        "@com_github_yhirose_cpp_httplib//:__subpackages__",
+        "@asio//:__subpackages__",
+        "@com_github_gabime_spdlog//:__subpackages__",
+        "@com_github_gulrak_filesystem//:__subpackages__",
+        "@com_google_googletest//:__subpackages__",
+        "@com_google_absl//:__subpackages__",
+        "@io_opencensus_cpp//:__subpackages__",
+        "@com_github_opentelemetry_proto//:__subpackages__",
+        "@com_google_protobuf//:__subpackages__",
+        "@com_github_cares_cares//:__subpackages__",
+        "@upb//:__subpackages__",
+        "@com_googlesource_code_re2//:__subpackages__",
+        "@boringssl//:__subpackages__",
+        "@zlib//:__subpackages__",
+        "@com_github_fmtlib_fmt//:__subpackages__",
+    ],
+    user_link_flags = [
+        "-Wl,--version-script=$(location ons.ldscript)",
+    ],
+    additional_linker_inputs = [
         "ons.ldscript",
-    ],
-    linkopts = [
-        "-Wl,--version-script,$(location ons.ldscript)",
-    ],
+    ]
 )
