@@ -36,6 +36,7 @@ cc_library(
     ],
 )
 
+# https://docs.google.com/document/d/1NJiOr2vBJyrj2q1FFvl7IuoateuJyRWpjn8-6HxLWLs/edit#heading=h.5mcn15i0e1ch
 cc_shared_library(
     name = "ons",
     roots = [
