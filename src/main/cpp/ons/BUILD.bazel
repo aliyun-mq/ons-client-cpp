@@ -24,6 +24,7 @@ cc_library(
     hdrs = glob(["include/*.h"]),
     strip_include_prefix = "//src/main/cpp/ons/include",
     deps = [
+        "//api:ons_interface",
         "//src/main/cpp/admin:admin_server_library",
         "//src/main/cpp/client:client_library",
         "//src/main/cpp/log:log_library",
@@ -31,5 +32,19 @@ cc_library(
         "//src/main/cpp/tracing:tracing_utility",
         "//src/main/cpp/tracing/exporters:otlp_exporter",
         "@com_google_absl//absl/types:optional",
+    ],
+)
+
+
+cc_binary(
+    name = "libons.so",
+    linkshared = True,
+    linkstatic = True,
+    deps = [
+        ":ons_library",
+        "ons.ldscript",
+    ],
+    linkopts = [
+        "-Wl,--version-script,$(location ons.ldscript)",
     ],
 )
