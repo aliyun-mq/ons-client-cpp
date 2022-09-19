@@ -1,5 +1,7 @@
 VERSION_3.0.0 {
-    global: 
+    global:
+        rocketmq::*;
+        ons::*;
         extern "C++" {
             rocketmq::*;
             ons::*;

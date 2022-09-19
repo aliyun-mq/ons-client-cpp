@@ -62,9 +62,9 @@ cc_shared_library(
         "@com_github_fmtlib_fmt//:__subpackages__",
     ],
     user_link_flags = [
-        "-Wl,--version-script=$(location ons.ldscript)",
+        "-Wl,--version-script=$(location ons.lds)",
     ],
     additional_linker_inputs = [
-        "ons.ldscript",
+        "ons.lds",
     ]
 )
