@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 project(rocketmq)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(gRPC_DEBUG ON)
 

@@ -21,7 +21,7 @@
 #include "ons/ONSFactoryProperty.h"
 #include "rocketmq/Logger.h"
 
-using namespace ons;
+using namespace ONS_NAMESPACE;
 
 int main(int argc, char* argv[]) {
   rocketmq::Logger& logger = rocketmq::getLogger();

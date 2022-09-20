@@ -14,7 +14,7 @@ ONS_NAMESPACE_BEGIN
 ROCKETMQ_NAMESPACE::MQMessageQueue ONSMessageQueueSelector::select(const std::vector<rocketmq::MQMessageQueue>& mqs,
                                                                    const rocketmq::MQMessage& msg, void* arg) {
   if (mqs.empty()) {
-    ons::ONSClientException e("Message queue to select from is empty", MESSAGE_SELECTOR_QUEUE_EMPTY);
+    ONS_NAMESPACE::ONSClientException e("Message queue to select from is empty", MESSAGE_SELECTOR_QUEUE_EMPTY);
     throw e;
   }
 

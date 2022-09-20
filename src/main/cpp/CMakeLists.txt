@@ -60,6 +60,7 @@ target_link_libraries(rocketmq_shared
             opencensus::stats
             opencensus_proto
             spdlog)
+#target_link_options(rocketmq_shared PRIVATE $<$<PLATFORM_ID:Linux>:-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/ons/ons.lds>)            
 set_target_properties(rocketmq_shared
         PROPERTIES
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}

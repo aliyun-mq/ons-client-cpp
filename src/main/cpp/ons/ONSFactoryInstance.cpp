@@ -23,7 +23,7 @@ Producer* ONSFactoryInstance::createProducer(ONSFactoryProperty& factory_propert
   }
 
   if (!factory_properties) {
-    ons::ONSClientException e(
+    ONS_NAMESPACE::ONSClientException e(
         FAQ::errorMessage("Required configuration items are missing", FAQ::CLIENT_CHECK_MSG_EXCEPTION));
     throw e;
   }
@@ -45,7 +45,7 @@ OrderProducer* ONSFactoryInstance::createOrderProducer(ONSFactoryProperty& facto
   }
 
   if (!factory_properties) {
-    ons::ONSClientException e(
+    ONS_NAMESPACE::ONSClientException e(
         FAQ::errorMessage("Required configuration items are missing", FAQ::CLIENT_CHECK_MSG_EXCEPTION));
     throw e;
   }
@@ -67,7 +67,7 @@ OrderConsumer* ONSFactoryInstance::createOrderConsumer(ONSFactoryProperty& facto
   }
 
   if (!factory_properties) {
-    ons::ONSClientException e(
+    ONS_NAMESPACE::ONSClientException e(
         FAQ::errorMessage("Required configuration items are missing", FAQ::CLIENT_CHECK_MSG_EXCEPTION));
     throw e;
   }
@@ -90,7 +90,7 @@ TransactionProducer* ONSFactoryInstance::createTransactionProducer(ONSFactoryPro
   }
 
   if (!factory_properties) {
-    ons::ONSClientException e(
+    ONS_NAMESPACE::ONSClientException e(
         FAQ::errorMessage("Required configuration items are missing", FAQ::CLIENT_CHECK_MSG_EXCEPTION));
     throw e;
   }
@@ -121,7 +121,7 @@ PushConsumer* ONSFactoryInstance::createPushConsumer(ONSFactoryProperty& factory
   }
 
   if (!factory_properties) {
-    ons::ONSClientException e(
+    ONS_NAMESPACE::ONSClientException e(
         FAQ::errorMessage("Required configuration items are missing", FAQ::CLIENT_CHECK_MSG_EXCEPTION));
     throw e;
   }

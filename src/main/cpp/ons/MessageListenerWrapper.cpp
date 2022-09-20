@@ -5,7 +5,7 @@
 
 ONS_NAMESPACE_BEGIN
 
-MessageListenerWrapper::MessageListenerWrapper(ons::MessageListener* message_listener)
+MessageListenerWrapper::MessageListenerWrapper(::ONS_NAMESPACE::MessageListener* message_listener)
     : message_listener_(message_listener) {
 }
 
