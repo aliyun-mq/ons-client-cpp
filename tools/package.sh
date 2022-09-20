@@ -9,7 +9,7 @@ fi
 mkdir -p "$BUILD_DIR"
 
 cd $BUILD_DIR
-cmake -DgRPC_SSL_PROVIDER=package -DgRPC_ZLIB_PROVIDER=package -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j $(nproc)
 VERSION="v3.0.7"
 DIST_DIR="$WORKSPACE/$VERSION/"

@@ -4,6 +4,7 @@ add_library(ons OBJECT ${SRC_FILES})
 target_include_directories(ons
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(ons PRIVATE -fexceptions -frtti)
 target_link_libraries(ons
         PRIVATE
             api

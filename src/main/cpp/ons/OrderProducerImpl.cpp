@@ -50,7 +50,7 @@ void OrderProducerImpl::shutdown() {
 }
 
 SendResultONS OrderProducerImpl::send(Message& msg, std::string message_group) {
-  ROCKETMQ_NAMESPACE::MQMessage message = ons::ONSUtil::get().msgConvert(msg);
+  ROCKETMQ_NAMESPACE::MQMessage message = ONS_NAMESPACE::ONSUtil::get().msgConvert(msg);
   ROCKETMQ_NAMESPACE::SendResult send_result = producer_.send(message, message_group);
   SendResultONS ons_send_result = SendResultONS();
   ons_send_result.setMessageId(send_result.getMsgId());

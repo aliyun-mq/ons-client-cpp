@@ -1,13 +1,11 @@
 #include "ons/ONSFactoryProperty.h"
 
-#include <fstream>
 #include <ios>
 #include <string>
 #include <system_error>
 
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_join.h"
-#include "absl/types/optional.h"
 #include "ghc/filesystem.hpp"
 #include "google/protobuf/struct.pb.h"
 #include "google/protobuf/util/json_util.h"
@@ -50,7 +48,7 @@ ONSFactoryProperty::ONSFactoryProperty() {
 }
 
 void ONSFactoryProperty::setDefaults() {
-  setMessageModel(ons::MessageModel::CLUSTERING);
+  setMessageModel(ONS_NAMESPACE::MessageModel::CLUSTERING);
   setSendMsgTimeout(std::chrono::seconds(3));
   setSuspendDuration(std::chrono::seconds(3));
   setFactoryProperty(MaxMsgCacheSize, "1000");
@@ -259,13 +257,13 @@ std::string ONSFactoryProperty::getMessageModel() const {
   return getProperty(MessageModel, EMPTY_STRING);
 }
 
-ONSFactoryProperty& ONSFactoryProperty::setMessageModel(ons::MessageModel message_model) {
+ONSFactoryProperty& ONSFactoryProperty::setMessageModel(ONS_NAMESPACE::MessageModel message_model) {
   switch (message_model) {
-    case ons::MessageModel::CLUSTERING:
+    case ONS_NAMESPACE::MessageModel::CLUSTERING:
       setFactoryProperty(ONSFactoryProperty::MessageModel, ONSFactoryProperty::CLUSTERING);
       break;
 
-    case ons::MessageModel::BROADCASTING:
+    case ONS_NAMESPACE::MessageModel::BROADCASTING:
       setFactoryProperty(ONSFactoryProperty::MessageModel, ONSFactoryProperty::BROADCASTING);
       break;
   }

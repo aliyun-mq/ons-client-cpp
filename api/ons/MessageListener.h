@@ -5,6 +5,7 @@
 #include "Message.h"
 
 ONS_NAMESPACE_BEGIN
+
 class ONSCLIENT_API MessageListener {
 public:
   virtual ~MessageListener() = default;
