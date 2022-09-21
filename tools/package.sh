@@ -9,8 +9,16 @@ fi
 mkdir -p "$BUILD_DIR"
 
 cd $BUILD_DIR
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j $(nproc)
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  # Linux
+  cmake -DCMAKE_BUILD_TYPE=Release ..
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  # Mac OSX
+  cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl ..
+fi
+
+make -j 4
 VERSION="$1"
 DIST_DIR="$WORKSPACE/$VERSION/"
 if [ -d "$DIST_DIR" ]; then
