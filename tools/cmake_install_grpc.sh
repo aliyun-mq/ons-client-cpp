@@ -13,6 +13,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     -DgRPC_ZLIB_PROVIDER=package             \
     -DCMAKE_INSTALL_PREFIX=$HOME/grpc        \
     ../grpc_v1.48.0
+    make -j $(nproc)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
     cmake -DCMAKE_BUILD_TYPE=Release          \
@@ -21,7 +22,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     -DCMAKE_INSTALL_PREFIX=$HOME/grpc         \
     -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl \
     ../grpc_v1.48.0
+    make
 fi
 
-make
 make install

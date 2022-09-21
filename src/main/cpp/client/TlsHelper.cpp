@@ -17,13 +17,23 @@
 #include "TlsHelper.h"
 
 #include "MixAll.h"
-#include "OpenSSLCompatible.h"
 #include <memory>
+#include <openssl/evp.h>
 #include <openssl/hmac.h>
 
 ROCKETMQ_NAMESPACE_BEGIN
 
 std::string TlsHelper::sign(const std::string& access_secret, const std::string& content) {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+  HMAC_CTX ctx;
+  HMAC_CTX_init(&ctx);
+  HMAC_Init(&ctx, access_secret.c_str(), access_secret.length(), EVP_sha1());
+  HMAC_Update(&ctx, (const unsigned char *)content.c_str(), content.length());
+  auto result = new unsigned char[EVP_MD_size(EVP_sha1())];
+  unsigned int len;
+  HMAC_Final(&ctx, result, &len);
+  HMAC_CTX_cleanup(&ctx);
+#else
   HMAC_CTX* ctx = HMAC_CTX_new();
   HMAC_Init_ex(ctx, access_secret.c_str(), access_secret.length(), EVP_sha1(), nullptr);
   HMAC_Update(ctx, reinterpret_cast<const unsigned char*>(content.c_str()), content.length());
@@ -31,7 +41,7 @@ std::string TlsHelper::sign(const std::string& access_secret, const std::string&
   unsigned int len;
   HMAC_Final(ctx, result, &len);
   HMAC_CTX_free(ctx);
-
+#endif
   std::string hex_str = MixAll::hex(result, len);
   delete[] result;
   return hex_str;
