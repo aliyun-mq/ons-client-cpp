@@ -16,9 +16,23 @@
 #
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
+filegroup(
+    name = "rocketmq_hdrs",
+    srcs = glob(["rocketmq/*.h"]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "ons_hdrs",
+    srcs = glob(["ons/*.h"]),
+    visibility = ["//visibility:public"],
+)
+
 cc_library(
     name = "rocketmq_interface",
-    hdrs = glob(["rocketmq/*.h"]),
+    hdrs = [
+        ":rocketmq_hdrs",
+    ],
     strip_include_prefix = "//api",
     visibility = ["//visibility:public"],
     deps = [
@@ -28,7 +42,9 @@ cc_library(
 
 cc_library(
     name = "ons_interface",
-    hdrs = glob(["ons/*.h"]),
+    hdrs = [
+        ":ons_hdrs",
+    ],
     strip_include_prefix = "//api",
     visibility = [
         "//visibility:public"

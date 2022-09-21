@@ -16,6 +16,7 @@
 #
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 load("@rules_cc//examples:experimental_cc_shared_library.bzl", "cc_shared_library")
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -86,4 +87,38 @@ cc_shared_library(
     additional_linker_inputs = [
         "ons.lds",
     ]
+)
+
+pkg_tar(
+    name = "ons-lib",
+    package_dir = "/lib",
+    srcs = [
+        ":ons",
+    ],
+)
+
+pkg_tar(
+    name = "rocketmq-hdrs",
+    package_dir = "/include/rocketmq",
+    srcs = [
+        "//api:rocketmq_hdrs",
+    ],
+)
+
+pkg_tar(
+    name = "ons-hdrs",
+    package_dir = "/include/ons",
+    srcs = [
+        "//api:ons_hdrs",
+    ],
+)
+
+pkg_tar(
+    name = "ons-dist",
+    extension = "tar.gz",
+    deps = [
+        ":ons-lib",
+        ":rocketmq-hdrs",
+        ":ons-hdrs",
+    ],
 )
