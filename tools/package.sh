@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+if [ "$#" -ne 1 ] ; then
+  echo "Usage: $0 v3.0.8" >&2
+  exit 1
+fi
+
 TOOLS_DIR=$(dirname "$0")
 WORKSPACE=$(cd -- "$TOOLS_DIR/.." && pwd)
 BUILD_DIR=$WORKSPACE/_build
@@ -13,12 +19,12 @@ cd $BUILD_DIR
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   # Linux
   cmake -DCMAKE_BUILD_TYPE=Release ..
+  make -j $(nproc)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   # Mac OSX
   cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl ..
+  make
 fi
-
-make
 
 VERSION="$1"
 DIST_DIR="$WORKSPACE/$VERSION/"
