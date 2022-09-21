@@ -156,3 +156,6 @@ if "com_google_googletest" not in native.existing_rules():
 2. CLion + Bazel Plugin
    
    Bazel also has a plugin for CLion.
+
+
+Sample Modification
