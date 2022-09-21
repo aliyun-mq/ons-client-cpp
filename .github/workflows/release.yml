@@ -40,6 +40,6 @@ jobs:
           name: release_url
       - name: Build
         run: |
-        ./tools/cmake_install_grpc.sh
-        ./tools/package.sh
+          ./tools/cmake_install_grpc.sh
+          ./tools/package.sh
         shell: bash
