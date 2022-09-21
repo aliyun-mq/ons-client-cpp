@@ -18,7 +18,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl ..
 fi
 
-make -j 4
+make
+
 VERSION="$1"
 DIST_DIR="$WORKSPACE/$VERSION/"
 if [ -d "$DIST_DIR" ]; then

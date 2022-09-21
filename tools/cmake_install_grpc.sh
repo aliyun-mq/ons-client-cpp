@@ -23,5 +23,5 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     ../grpc_v1.48.0
 fi
 
-make -j $(nproc)
+make
 make install
