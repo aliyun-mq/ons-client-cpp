@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: |
           ./tools/cmake_install_grpc.sh
-          ./tools/package.sh ${TAG_REF_NAME##*/v}-${{ matrix.os }}
+          ./tools/package.sh ${{ matrix.os }}
         shell: bash
       - name: Get Release File Name & Upload URL
         id: get_release_info
@@ -59,6 +59,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./${TAG_REF_NAME##*/v}-${{ matrix.os }}.tar.gz
+          asset_path: ./${{ matrix.os }}.tar.gz
           asset_name: ${{ steps.get_release_info.outputs.file_name }}-${{ matrix.os }}.tar.gz
           asset_content_type: application/tar+gzip
