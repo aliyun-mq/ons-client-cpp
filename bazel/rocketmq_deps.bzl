@@ -95,6 +95,7 @@ def rocketmq_deps():
             name = "com_github_grpc_grpc",
             strip_prefix = "grpc-1.48.1",
             sha256 = "320366665d19027cda87b2368c03939006a37e0388bfd1091c8d2a96fbc93bd8",
+            build_file = "@org_apache_rocketmq//third_party:grpc.BUILD",
             urls = [
                 "https://github.com/grpc/grpc/archive/refs/tags/v1.48.1.tar.gz"
             ],
