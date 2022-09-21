@@ -31,7 +31,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, windows-2019, windows-2022]
     steps:
       - uses: actions/checkout@v2
       - name: Load Release URL File from release job
@@ -39,10 +39,7 @@ jobs:
         with:
           name: release_url
       - name: Build
-        run: |
-          ./tools/cmake_install_grpc.sh
-          ./tools/package.sh ${{ matrix.os }}
-        shell: bash
+        run: bazel build --experimental_cc_shared_library -c opt //src/main/cpp/ons:ons-dist
       - name: Get Release File Name & Upload URL
         id: get_release_info
         run: |
@@ -59,6 +56,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./${{ matrix.os }}.tar.gz
+          asset_path: ./bazel-bin/src/main/cpp/ons/ons-dist.tar.gz
           asset_name: ${{ steps.get_release_info.outputs.file_name }}-${{ matrix.os }}.tar.gz
           asset_content_type: application/tar+gzip
