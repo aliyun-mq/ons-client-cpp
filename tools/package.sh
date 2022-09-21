@@ -11,7 +11,7 @@ mkdir -p "$BUILD_DIR"
 cd $BUILD_DIR
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j $(nproc)
-VERSION="v3.0.7"
+VERSION="$1"
 DIST_DIR="$WORKSPACE/$VERSION/"
 if [ -d "$DIST_DIR" ]; then
     rm -fr $DIST_DIR
