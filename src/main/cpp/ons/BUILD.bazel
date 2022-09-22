@@ -81,9 +81,12 @@ cc_shared_library(
         "@zlib//:__subpackages__",
         "@com_github_fmtlib_fmt//:__subpackages__",
     ],
-    user_link_flags = [
-        "-Wl,--version-script=$(location ons.lds)",
-    ],
+    user_link_flags = select({
+        "@bazel_tools//src/conditions:linux": [
+            "-Wl,--version-script=$(location ons.lds)",
+        ],
+        "//conditions:default": [],
+    }),
     additional_linker_inputs = [
         "ons.lds",
     ]
