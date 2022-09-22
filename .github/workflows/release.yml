@@ -41,7 +41,7 @@ jobs:
           name: release_url
       - name: Build on Linux
         if: runner.os == 'Linux'
-        run: bazel build --experimental_cc_shared_library -c opt --config=remote --remote_header=x-buildbuddy-api-key=${{ secrets.BUILD_BUDDY_API_KEY }} //src/main/cpp/ons:ons-dist
+        run: bazel build --experimental_cc_shared_library -c opt //src/main/cpp/ons:ons-dist
       - name: Build on MacOS or Windows
         if: runner.os != 'Linux'
         run: bazel build --experimental_cc_shared_library -c opt //src/main/cpp/ons:ons-dist
