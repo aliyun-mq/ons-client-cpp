@@ -32,54 +32,22 @@ DnsResolver* dnsResolver() {
   return &resolver;
 }
 
-// TODO: Use asio resolver to make the following implementation portable.
-// https://dens.website/tutorials/cpp-asio/resolvers
+/**
+ * Use asio resolver to make the following implementation portable.
+ */
 void DnsResolver::resolve(const std::string& host, const char* port) {
   asio::io_context context;
   asio::error_code ec;
   asio::ip::tcp::resolver resolver(context);
   auto result_types = resolver.resolve(host, port, ec);
-  for (const asio::ip::tcp::endpoint& endpoint : result_types) {
-    std::cout << endpoint.address() << std::endl;
+  for (const asio::ip::tcp::endpoint endpoint : result_types) {
+    std::string ip = endpoint.address().to_string();
+    {
+      absl::MutexLock lk(&ip_domain_map_mtx_);
+      ip_domain_map_.insert({ip, host});
+    }
+    SPDLOG_INFO("DNS resolver cached {} --> {}", ip, host);
   }
-  // struct addrinfo hints = {};
-  // struct addrinfo *res, *p;
-  // char ip_str[INET6_ADDRSTRLEN];
-
-  // memset(&hints, 0, sizeof(hints));
-  // hints.ai_family = AF_UNSPEC;
-  // hints.ai_socktype = SOCK_STREAM;
-
-  // if (getaddrinfo(host.c_str(), port, &hints, &res) != 0) {
-  //   SPDLOG_WARN("Failed to resolve domain name: {}", host);
-  //   return;
-  // }
-
-  // for (p = res; nullptr != p; p = p->ai_next) {
-  //   void* addr;
-  //   if (p->ai_family == AF_INET) {
-  //     auto ipv4 = (struct sockaddr_in*)p->ai_addr;
-  //     addr = &(ipv4->sin_addr);
-  //     inet_ntop(p->ai_family, addr, ip_str, sizeof ip_str);
-  //     std::string ip(ip_str);
-  //     {
-  //       absl::MutexLock lk(&ip_domain_map_mtx_);
-  //       ip_domain_map_.insert({ip, host});
-  //     }
-  //     SPDLOG_INFO("Cached {} --> {}", ip, host);
-  //   } else if (p->ai_family == AF_INET6) {
-  //     auto ipv6 = (struct sockaddr_in6*)p->ai_addr;
-  //     addr = &(ipv6->sin6_addr);
-  //     inet_ntop(p->ai_family, addr, ip_str, sizeof ip_str);
-  //     std::string ip(ip_str);
-  //     {
-  //       absl::MutexLock lk(&ip_domain_map_mtx_);
-  //       ip_domain_map_.insert({ip, host});
-  //     }
-  //     SPDLOG_INFO("Cached {} --> {}", ip, host);
-  //   }
-  // }
-  // freeaddrinfo(res);
 }
 
 void DnsResolver::resolve(const std::vector<std::string>& list) {
