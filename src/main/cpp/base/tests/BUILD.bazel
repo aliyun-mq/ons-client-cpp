@@ -1,0 +1,11 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+cc_test(
+    name = "dns_resolver_test",
+    srcs = [
+        "DnsResolverTest.cpp",
+    ],
+    deps = [
+        "//src/main/cpp/base:base_library",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

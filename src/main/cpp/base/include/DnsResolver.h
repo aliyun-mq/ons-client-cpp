@@ -22,6 +22,7 @@
 #include "absl/types/optional.h"
 #include "absl/strings/string_view.h"
 #include "rocketmq/RocketMQ.h"
+#include <string>
 
 ROCKETMQ_NAMESPACE_BEGIN
 
@@ -38,6 +39,14 @@ public:
   void resolve(const std::vector<std::string>& list);
 
   absl::optional<std::string> lookupIP(absl::string_view ip) LOCKS_EXCLUDED(ip_domain_map_mtx_);
+
+  /**
+   * Expose for test purpose.
+   */
+  absl::flat_hash_map<std::string, std::string> ipDomainMap() LOCKS_EXCLUDED(ip_domain_map_mtx_) {
+    absl::MutexLock lk(&ip_domain_map_mtx_);
+    return ip_domain_map_;
+  }
 
 private:
   absl::flat_hash_map<std::string, std::string> ip_domain_map_ GUARDED_BY(ip_domain_map_mtx_);
