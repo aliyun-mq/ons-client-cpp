@@ -33,6 +33,8 @@ DnsResolver* dnsResolver() {
   return &resolver;
 }
 
+// TODO: Use asio resolver to make the following implementation portable.
+// https://dens.website/tutorials/cpp-asio/resolvers
 void DnsResolver::resolve(const std::string& host, const char* port) {
   struct addrinfo hints = {};
   struct addrinfo *res, *p;
