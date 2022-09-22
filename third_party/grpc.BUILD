@@ -6971,22 +6971,24 @@ grpc_cc_library(
     ],
 )
 
-grpc_cc_library(
+cc_library(
     name = "upb_generated",
     srcs = glob(["src/core/ext/upb-generated/**/*.c"]),
     hdrs = glob(["src/core/ext/upb-generated/**/*.h"]),
     deps = [
-        "grpc",
-    ]
+        ":grpc",
+    ],
+    visibility = ["//visibility:public"]
 )
 
-grpc_cc_library(
+cc_library(
     name = "upbdefs_generated",
     srcs = glob(["src/core/ext/upbdefs-generated/**/*.c"]),
     hdrs = glob(["src/core/ext/upbdefs-generated/**/*.h"]),
     deps = [
-        "grpc",
+        ":grpc",
     ],
+    visibility = ["//visibility:public"]
 )
 
 ### UPB Targets
