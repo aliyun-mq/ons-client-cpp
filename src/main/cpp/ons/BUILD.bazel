@@ -43,8 +43,6 @@ cc_shared_library(
     roots = [
         "//src/main/cpp/log:log_library",
         ":ons_library",
-        "@com_github_grpc_grpc//:upb_generated",
-        "@com_github_grpc_grpc//:upbdefs_generated",
         "@com_github_fmtlib_fmt//:fmtlib",
         "@com_google_absl//absl/base",
         "@com_google_absl//absl/container:flat_hash_map",
@@ -61,7 +59,13 @@ cc_shared_library(
         "//external:madler_zlib",
         "@com_github_yhirose_cpp_httplib//:cpp_httplib",
         "@asio//:asio",
-    ],
+    ] + select({
+        "@bazel_tools//src/conditions:linux": [
+            "@com_github_grpc_grpc//:upb_generated",
+            "@com_github_grpc_grpc//:upbdefs_generated",
+        ],
+        "//conditions:default": [],
+    }),
     static_deps = [
         "@//:__subpackages__",
         "@com_github_grpc_grpc//:__subpackages__",
@@ -94,7 +98,7 @@ cc_shared_library(
 
 pkg_tar(
     name = "ons-lib",
-    package_dir = "/lib",
+    package_dir = "/ons/lib",
     srcs = [
         ":ons",
     ],
@@ -102,7 +106,7 @@ pkg_tar(
 
 pkg_tar(
     name = "rocketmq-hdrs",
-    package_dir = "/include/rocketmq",
+    package_dir = "/ons/include/rocketmq",
     srcs = [
         "//api:rocketmq_hdrs",
     ],
@@ -110,9 +114,17 @@ pkg_tar(
 
 pkg_tar(
     name = "ons-hdrs",
-    package_dir = "/include/ons",
+    package_dir = "/ons/include/ons",
     srcs = [
         "//api:ons_hdrs",
+    ],
+)
+
+pkg_tar(
+    name = "ons-examples",
+    package_dir = "/ons/examples",
+    srcs = [
+        "//examples/ons:examples",
     ],
 )
 
@@ -123,5 +135,6 @@ pkg_tar(
         ":ons-lib",
         ":rocketmq-hdrs",
         ":ons-hdrs",
+        ":ons-examples",
     ],
 )

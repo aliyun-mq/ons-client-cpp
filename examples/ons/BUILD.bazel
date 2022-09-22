@@ -1,0 +1,7 @@
+filegroup(
+    name = "examples",
+    srcs = glob(["*.cpp"]) + [
+        "Makefile"
+    ],
+    visibility = ["//visibility:public"],
+)
