@@ -18,7 +18,6 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_cc//examples:experimental_cc_shared_library.bzl", "cc_shared_library")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 load("@rules_pkg//pkg:deb.bzl", "pkg_deb")
-load("@rules_pkg//pkg:rpm.bzl", "pkg_rpm")
 
 package(default_visibility = ["//visibility:public"])
 
