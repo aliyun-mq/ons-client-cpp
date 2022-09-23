@@ -16,6 +16,9 @@ load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_
 rules_proto_dependencies()
 rules_proto_toolchains()
 
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+rules_pkg_dependencies()
+
 # Support Bazel RBE(remote build execution)
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(

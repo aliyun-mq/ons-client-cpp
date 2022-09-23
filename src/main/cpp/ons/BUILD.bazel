@@ -14,9 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_cc//examples:experimental_cc_shared_library.bzl", "cc_shared_library")
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
+load("@rules_pkg//pkg:deb.bzl", "pkg_deb")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -137,4 +138,14 @@ pkg_tar(
         ":ons-hdrs",
         ":ons-examples",
     ],
+)
+
+pkg_deb(
+    name = "ons-deb",
+    architecture = "amd64",
+    data = ":ons-dist",
+    description = "C++ SDK for Aliyun Open Messaging Service",
+    maintainer = "Li Zhanhui <lizhanhui@gmail.com>",
+    package = "ons-client-cpp",
+    version = "3.0.0",
 )
