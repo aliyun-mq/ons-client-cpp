@@ -99,7 +99,7 @@ cc_shared_library(
 
 pkg_tar(
     name = "ons-lib",
-    package_dir = "/ursr/local/lib",
+    package_dir = "/usr/local/lib",
     srcs = [
         ":ons",
     ],
