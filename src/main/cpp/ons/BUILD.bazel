@@ -150,13 +150,3 @@ pkg_deb(
     package = "ons-client-cpp",
     version = "3.0.0",
 )
-
-pkg_rpm(
-    name = "ons-rpm",
-    architecture = "amd64",
-    data = ":ons-dist",
-    description = "C++ SDK for Aliyun Open Messaging Service",
-    maintainer = "Li Zhanhui <lizhanhui@gmail.com>",
-    package = "ons-client-cpp",
-    version = "3.0.0",
-)
