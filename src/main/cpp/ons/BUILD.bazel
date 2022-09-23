@@ -18,6 +18,7 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_cc//examples:experimental_cc_shared_library.bzl", "cc_shared_library")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 load("@rules_pkg//pkg:deb.bzl", "pkg_deb")
+load("@rules_pkg//pkg:rpm.bzl", "pkg_rpm")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -142,6 +143,16 @@ pkg_tar(
 
 pkg_deb(
     name = "ons-deb",
+    architecture = "amd64",
+    data = ":ons-dist",
+    description = "C++ SDK for Aliyun Open Messaging Service",
+    maintainer = "Li Zhanhui <lizhanhui@gmail.com>",
+    package = "ons-client-cpp",
+    version = "3.0.0",
+)
+
+pkg_rpm(
+    name = "ons-rpm",
     architecture = "amd64",
     data = ":ons-dist",
     description = "C++ SDK for Aliyun Open Messaging Service",
